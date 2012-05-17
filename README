@@ -1,0 +1,98 @@
+README for Python Implementation of LinkedIn API
+
+LinkedIn API for Python
+=======================
+  This package provides a pure python interface for the LinkedIn Connection and Profile APIs.
+
+  Author: `Ozgur Vatansever <ozgurvt@gmail.com>`
+
+  LinkedIn (http://developer.linkedin.com) provides a service that let people bring their LinkedIn profiles
+  and networks with them to your site or application via their OAuth based API. This library provides a simple
+  architecture over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
+
+
+INSTALLATION
+============
+  You have 2 options:
+
+  1) Getting the code from repository:
+     - svn co http...
+
+  2) Getting the code from Google Code website of python-linkedin
+     - wget bla bla..
+
+  Enter the directory you've just downloaded, and execute the following command on shell to install the package:
+  - sudo python setup.py install
+
+  
+KEYS
+====
+
+  In order to use it you have an 'application key' and 'application secret'.
+  For debugging I am providing you those. You can use the following as api key and secret:
+
+  KEY = wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl
+  SECRET = daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG
+
+QUICK USAGE FROM INTERPRETER
+============================
+
+  For testing the library using an interpreter, use the quick helper.
+  
+  from linkedin import helper
+  
+  api = helper.quick_api(KEY, SECRET)
+  
+  This will print a url to the screen. Go into this URL using a browser, after you login, the method will return with an api object you can now use.
+  
+  api.get_profile() etc...
+  
+
+BASIC USAGE
+===========
+
+  You can use "http://localhost" as the return url. Return URL is a url where LinkedIn redirects the user after he/she grants access to
+  your application.
+  """
+  from linkedin import linkedin
+
+  RETURN_URL = "http://localhost" 
+
+  api = linkedin.LinkedIn(KEY, SECRET, RETURN_URL)
+
+  result = api.request_token() # result can be True or False
+  # if True, you can open your browser and copy the authorization url of LinkedIn.
+  api.get_authorize_url() # open this url on your browser
+  
+  # When you grants access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:
+  http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874
+  auth_verifier = 04874
+  # After you get the verifier, you call the accessToken() method to get the access token.
+  result = api.access_token("04874") # result can be True or False
+  # if True, now you can fetch the methods that LinkedIn provides. 
+ 
+  # To fetch your profile, simply call GetProfile method.
+  profile = api.get_profile()
+  profile.id # is your id (may be null)
+
+  # if you know your public url, call the method above with your public url for more information
+  profile = api.get_profile(member_id = None, url = "http://www.linkedin.com/in/ozgurv")
+  profile.id # is your id
+  profile.first_name
+  profile.last_name
+  profile.picture_url
+  ... 
+  ...
+
+  # To fetch your connections, simply call 
+  connections = api.get_connections() # connections is a list of profiles
+
+
+LICENSE
+=======
+  This package is licensed under the GNU General Public License V2.
+
+  To see the license, visit the following link:
+   - http://www.gnu.org/licenses/gpl-2.0.txt
+
+
