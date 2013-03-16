@@ -15,7 +15,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 
 setup(name='py-linkedin',
       version=__version__,
-      description = 'Python Interface for the LinkedIn API',
+      description='Python Interface for the LinkedIn API',
       long_description=long_description,
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -31,7 +31,7 @@ setup(name='py-linkedin',
       author_email='ozgurvt@gmail.com',
       maintainer='Ozgur Vatansever',
       maintainer_email='ozgurvt@gmail.com',
-      url='https://github.com/ozgur/python-linkedin/',
+      url='http://ozgur.github.com/python-linkedin/',
       license='MIT',
       packages=['linkedin'],
       zip_safe=False,
