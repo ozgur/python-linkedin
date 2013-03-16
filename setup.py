@@ -15,7 +15,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 
 setup(name='py-linkedin',
       version=__version__,
-      description='Python Interface for the LinkedIn API',
+      description='Python Interface to the LinkedIn API',
       long_description=long_description,
       classifiers=[
           'Development Status :: 5 - Production/Stable',
