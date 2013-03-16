@@ -112,11 +112,11 @@ You can send an invitation to your friend's email to invite them to join your Li
 
 .. code-block:: python
 
-    result = api.send_invitation('This is a subject', 'Join to my network', 'ozgurvt@gmail.com', 'Ozgur', 'Vatansever')
+    result = api.send_invitation('This is a subject', 'Join to my network', 'Ozgur', 'Vatansever', 'ozgurvt@gmail.com')
     print result
     True
 
-    result = api.send_invitation('This is a subject', 'Join to my network', 'ozgurvt', 'Ozgur', 'Vatansever')
+    result = api.send_invitation('This is a subject', 'Join to my network', 'Ozgur', 'Vatansever', 'ozgurvt')
     if result is False:
         print api.get_error()
     u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'
