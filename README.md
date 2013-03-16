@@ -1,5 +1,7 @@
 # Python LinkedIn
 
+**THIS PACKAGE IS IN DEVELOPMENT PHASE. USE ACCORDINGLY**
+
 Python interface to the LinkedIn API
 
 This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
