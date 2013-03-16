@@ -117,3 +117,7 @@ if result is False:
     print api.get_error()
 u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'
 ```
+
+## Throttle Limits
+
+LinkedIn API keys are throttled by default. You should take a look at [http://developer.linkedin.com/docs/DOC-1112](http://developer.linkedin.com/docs/DOC-1112) to get more information.
