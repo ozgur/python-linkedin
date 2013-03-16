@@ -9,11 +9,11 @@ except ImportError:
 from linkedin import __version__
 
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     long_description = readme.read()
 
 
-setup(name='python-linkedin',
+setup(name='py-linkedin',
       version=__version__,
       description = 'Python Interface for the LinkedIn API',
       long_description=long_description,

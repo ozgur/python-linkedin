@@ -1,8 +1,6 @@
 Python LinkedIn
 =================
 
-**THIS PACKAGE IS IN DEVELOPMENT PHASE. USE ACCORDINGLY**
-
 Python interface to the LinkedIn API
 
 This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
@@ -36,12 +34,14 @@ Quick Usage From Python Interpreter
 For testing the library using an interpreter, use the quick helper.
 
 .. code-block:: python
+
     from linkedin import helper
     api = helper.quick_api(<Your KEY>, <Your SECRET>)
 
 This will print a url to the screen. Go into this URL using a browser, after you login, the method will return with an API object you can now use.
 
 .. code-block:: python
+
     api.get_profile()
 
 Usage
@@ -50,6 +50,7 @@ Usage
 You can use **http://localhost** as the return url. Return URL is a url where LinkedIn redirects the user after he/she grants access to your application.
 
 .. code-block:: python
+
     from linkedin import linkedin
 
     RETURN_URL = 'http://localhost'
@@ -61,6 +62,7 @@ You can use **http://localhost** as the return url. Return URL is a url where Li
 When you grant access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:
 
 .. code-block:: python
+
     http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874"
 
 
