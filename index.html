@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Python-linkedin by ozgur</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Python-linkedin</h1>
+        <p>Python interface to the LinkedIn API</p>
+
+        <p class="view"><a href="https://github.com/ozgur/python-linkedin">View the Project on GitHub <small>ozgur/python-linkedin</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/ozgur/python-linkedin/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ozgur/python-linkedin/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ozgur/python-linkedin">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Python LinkedIn</h1>
+
+<p><strong>THIS PACKAGE IS IN DEVELOPMENT PHASE. USE ACCORDINGLY</strong></p>
+
+<p>Python interface to the LinkedIn API</p>
+
+<p><a href="http://developer.linkedin.com"><img src="http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png" alt="LinkedIn"></a></p>
+
+<p>This library provides a pure python interface for the LinkedIn <strong>Connection</strong>, <strong>Profile</strong>, <strong>Search</strong>, <strong>Status</strong>, <strong>Messaging</strong> and <strong>Invitation</strong> APIs.</p>
+
+<p><a href="http://developer.linkedin.com"><strong>LinkedIn</strong></a> provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.</p>
+
+<h2>Installation</h2>
+
+<p>You can install <strong>python-linkedin</strong> library via pip:</p>
+
+<pre><code>$ pip install python-linkedin
+</code></pre>
+
+<h2>API Keys</h2>
+
+<p>In order to use the LinkedIn API, you have an <strong>application key</strong> and <strong>application secret</strong>. For debugging purposes I can provide you those. You can use the following as api key and secret:</p>
+
+<div class="highlight"><pre><span class="n">KEY</span> <span class="o">=</span> <span class="s">'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'</span>
+<span class="n">SECRET</span> <span class="o">=</span> <span class="s">'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'</span>
+</pre></div>
+
+<p>You can also get those keys from <a href="http://developer.linkedin.com/rest">here</a>.</p>
+
+<h2>Quick Usage From Python Interpreter</h2>
+
+<p>For testing the library using an interpreter, use the quick helper.</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">quick_api</span><span class="p">(</span><span class="o">&lt;</span><span class="n">Your</span> <span class="n">KEY</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Your</span> <span class="n">SECRET</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+
+<p>This will print a url to the screen. Go into this URL using a browser, after you login, the method will return with an API object you can now use.</p>
+
+<div class="highlight"><pre><span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
+</pre></div>
+
+<h2>Usage</h2>
+
+<p>You can use <strong>http://localhost</strong> as the return url. Return URL is a url where LinkedIn redirects the user after he/she grants access to your application.</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin</span> <span class="kn">import</span> <span class="n">linkedin</span>
+
+<span class="n">RETURN_URL</span> <span class="o">=</span> <span class="s">'http://localhost'</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">linkedin</span><span class="o">.</span><span class="n">LinkedIn</span><span class="p">(</span><span class="o">&lt;</span><span class="n">Your</span> <span class="n">KEY</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Your</span> <span class="n">SECRET</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">RETURN_URL</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">request_token</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">api</span><span class="o">.</span><span class="n">get_authorize_url</span><span class="p">()</span> <span class="c"># open this url on your browser</span>
+</pre></div>
+
+<p>When you grant access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:</p>
+
+<div class="highlight"><pre><span class="s">"http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&amp;oauth_verifier=04874"</span>
+</pre></div>
+
+<p>This means that the <strong>auth_verifier</strong> value is 04874. After you get the verifier, you call the <strong>.access_token()</strong> method to get the access token.</p>
+
+<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">access_token</span><span class="p">(</span><span class="n">verifier</span><span class="o">=</span><span class="s">'04874'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">profile</span><span class="o">.</span><span class="n">id</span>
+</pre></div>
+
+<p>If you know your public url, call the method above with your public url for more information.</p>
+
+<div class="highlight"><pre><span class="n">profile</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">(</span><span class="n">member_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s">'http://www.linkedin.com/in/ozgurv'</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">profile</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">picture_url</span>
+</pre></div>
+
+<p>To fetch your connections, simply call:</p>
+
+<div class="highlight"><pre><span class="n">connections</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_connections</span><span class="p">()</span>
+</pre></div>
+
+<p>You can set/clear your status by calling <strong>.set_status()</strong> or <strong>.clear_status()</strong> methods. If you get False as the result, you can get the error by calling <strong>.get_error()</strong> method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at <a href="http://developer.linkedin.com/docs/DOC-1007">http://developer.linkedin.com/docs/DOC-1007</a></p>
+
+<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s">'This is my status.'</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">clear_status</span><span class="p">()</span>
+</pre></div>
+
+<p>You can send a message to yourself or your connections' inboxes by simply calling <strong>.send_message()</strong> method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at <a href="http://developer.linkedin.com/docs/DOC-1044">http://developer.linkedin.com/docs/DOC-1044</a></p>
+
+<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'This is the body'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
+<span class="s">u'Missing {mailbox-item/recipients/recipient} element'</span>
+</pre></div>
+
+<p>You can set the parameter <strong>send_yourself</strong> to True, so you can send the message to yourself.</p>
+
+<div class="highlight"><pre><span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'This is the body'</span><span class="p">,</span> <span class="p">[</span><span class="s">'ID1'</span><span class="p">,</span> <span class="s">'ID2'</span><span class="p">,</span> <span class="s">'ID3'</span><span class="p">],</span> <span class="n">send_yourself</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<p>You can send an invitation to your friend's email to invite them to join your LinkedIn network by simply calling <strong>.send_invitation()</strong> method.</p>
+
+<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'ozgurvt@gmail.com'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">result</span>
+<span class="bp">True</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'ozgurvt'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
+<span class="s">u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'</span>
+</pre></div>
+
+<h2>Throttle Limits</h2>
+
+<p>LinkedIn API keys are throttled by default. You should take a look at <a href="http://developer.linkedin.com/docs/DOC-1112">http://developer.linkedin.com/docs/DOC-1112</a> to get more information.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/ozgur">ozgur</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
