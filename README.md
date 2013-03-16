@@ -81,15 +81,14 @@ To fetch your connections, simply call:
 connections = api.get_connections()
 ```
 
-You can set/clear your status by calling .set_status() or .clear_status() methods.
-If you get False as the result, you can get the error performing **.get_error()** method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1007](http://developer.linkedin.com/docs/DOC-1007)
+You can set/clear your status by calling **.set_status()** or **.clear_status()** methods. If you get False as the result, you can get the error by calling **.get_error()** method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1007](http://developer.linkedin.com/docs/DOC-1007)
 
 ```python
 result = api.set_status('This is my status.')
 result = api.clear_status()
 ```
 
-You can send a message to yourself or your connections' inboxes by simply calling **.send_message()** method. You can send your message at most 10 connections at a time. If you give more than 10 ids, the IDs after 10th one are ignored. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1044](http://developer.linkedin.com/docs/DOC-1044)
+You can send a message to yourself or your connections' inboxes by simply calling **.send_message()** method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1044](http://developer.linkedin.com/docs/DOC-1044)
 
 ```python
 result = api.send_message('This is a subject', 'This is the body')
@@ -100,8 +99,8 @@ u'Missing {mailbox-item/recipients/recipient} element'
 
 You can set the parameter **send_yourself** to True, so you can send the message to yourself.
 
-```
-result = api.send_message('This is a subject', 'This is the body', ['ID1', 'ID2', 'ID3'], send_yourself=True)
+```python
+api.send_message('This is a subject', 'This is the body', ['ID1', 'ID2', 'ID3'], send_yourself=True)
 ```
 
 You can send an invitation to your friend's email to invite them to join your LinkedIn network by simply calling **.send_invitation()** method.
