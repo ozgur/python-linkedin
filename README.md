@@ -2,15 +2,13 @@
 
 Python interface to the LinkedIn API
 
-README for Python Implementation of LinkedIn API
-
-This package provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
+This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
 
 [**LinkedIn**](http://developer.linkedin.com) provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
 
 ## Installation
 
-You can install python-linkedin via pip:
+You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
 
