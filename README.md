@@ -64,7 +64,7 @@ When you grant access to the application, you will be redirected to the return u
 "http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874"
 ```
 
-This means that the **auth_verifier** value is 04874. After you get the verifier, you call the **.accessToken()** method to get the access token.
+This means that the **auth_verifier** value is 04874. After you get the verifier, you call the **.access_token()** method to get the access token.
 
 ```python
 result = api.access_token(verifier='04874')
