@@ -7,7 +7,7 @@ Python interface to the LinkedIn API
 
 This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
 
-`LinkedIn<http://developer.linkedin.com>` provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
+`LinkedIn<http://developer.linkedin.com>`_ provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
 
 Installation
 --------------------
@@ -27,7 +27,7 @@ In order to use the LinkedIn API, you have an **application key** and **applicat
     KEY = 'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'
     SECRET = 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'
 
-You can also get those keys from `here<http://developer.linkedin.com/rest>`.
+You can also get those keys from `here<http://developer.linkedin.com/rest>`_.
 
 
 Quick Usage From Python Interpreter
@@ -86,14 +86,14 @@ To fetch your connections, simply call:
 
     connections = api.get_connections()
 
-You can set/clear your status by calling **.set_status()** or **.clear_status()** methods. If you get False as the result, you can get the error by calling **.get_error()** method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at `http://developer.linkedin.com/docs/DOC-1007<http://developer.linkedin.com/docs/DOC-1007>`
+You can set/clear your status by calling **.set_status()** or **.clear_status()** methods. If you get False as the result, you can get the error by calling **.get_error()** method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at `http://developer.linkedin.com/docs/DOC-1007<http://developer.linkedin.com/docs/DOC-1007>`_
 
 .. code-block:: python
 
     result = api.set_status('This is my status.')
     result = api.clear_status()
 
-You can send a message to yourself or your connections' inboxes by simply calling **.send_message()** method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at `http://developer.linkedin.com/docs/DOC-1044<http://developer.linkedin.com/docs/DOC-1044>`
+You can send a message to yourself or your connections' inboxes by simply calling **.send_message()** method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at `http://developer.linkedin.com/docs/DOC-1044<http://developer.linkedin.com/docs/DOC-1044>`_
 
 .. code-block:: python
 
@@ -124,4 +124,4 @@ You can send an invitation to your friend's email to invite them to join your Li
 Throttle Limits
 ----------------------------
 
-LinkedIn API keys are throttled by default. You should take a look at `http://developer.linkedin.com/docs/DOC-1112<http://developer.linkedin.com/docs/DOC-1112>` to get more information.
+LinkedIn API keys are throttled by default. You should take a look at `http://developer.linkedin.com/docs/DOC-1112<http://developer.linkedin.com/docs/DOC-1112>`_ to get more information.
