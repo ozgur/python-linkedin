@@ -18,8 +18,8 @@ You can install **python-linkedin** library via pip:
 
 In order to use the LinkedIn API, you have an **application key** and **application secret**. For debugging purposes I can provide you those. You can use the following as api key and secret:
 
-    KEY = wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl
-    SECRET = daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG
+    KEY = 'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'
+    SECRET = 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'
 
 You can also get those keys from [here](http://developer.linkedin.com/rest).
 
