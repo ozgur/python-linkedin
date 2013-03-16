@@ -18,8 +18,8 @@ You can install python-linkedin via pip:
 
 In order to use the LinkedIn API, you have an **application key** and **application secret**. For debugging purposes I can provide you those. You can use the following as api key and secret:
 
-  KEY = wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl
-  SECRET = daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG
+    KEY = wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl
+    SECRET = daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG
 
 You can also get those keys from [here](http://developer.linkedin.com/rest).
 
@@ -56,7 +56,7 @@ if result is True:
 When you grant access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:
 
 ```python
-  http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874
+"http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874"
 ```
 
 This means that the **auth_verifier** value is 04874. After you get the verifier, you call the **.accessToken()** method to get the access token.
