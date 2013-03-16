@@ -3,6 +3,10 @@ Python LinkedIn
 
 Python interface to the LinkedIn API
 
+.. image:: https://travis-ci.org/ozgur/python-linkedin.png?branch=master
+   :target: https://travis-ci.org/ozgur/python-linkedin
+
+
 This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
 
 `LinkedIn <http://developer.linkedin.com>`_ provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
