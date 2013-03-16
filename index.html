@@ -30,15 +30,13 @@
       <section>
         <h1>Python LinkedIn</h1>
 
-<p><strong>THIS PACKAGE IS IN DEVELOPMENT PHASE. USE ACCORDINGLY</strong></p>
-
 <p>Python interface to the LinkedIn API</p>
 
 <p><a href="http://developer.linkedin.com"><img src="http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png" alt="LinkedIn"></a></p>
 
 <p>This library provides a pure python interface for the LinkedIn <strong>Connection</strong>, <strong>Profile</strong>, <strong>Search</strong>, <strong>Status</strong>, <strong>Messaging</strong> and <strong>Invitation</strong> APIs.</p>
 
-<p><a href="http://developer.linkedin.com"><strong>LinkedIn</strong></a> provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.</p>
+<p><a href="http://developer.linkedin.com">LinkedIn</a> provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.</p>
 
 <h2>Installation</h2>
 
@@ -128,11 +126,11 @@
 
 <p>You can send an invitation to your friend's email to invite them to join your LinkedIn network by simply calling <strong>.send_invitation()</strong> method.</p>
 
-<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'ozgurvt@gmail.com'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">)</span>
+<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">,</span> <span class="s">'ozgurvt@gmail.com'</span><span class="p">)</span>
 <span class="k">print</span> <span class="n">result</span>
 <span class="bp">True</span>
 
-<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'ozgurvt'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">,</span> <span class="s">'ozgurvt'</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
     <span class="k">print</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
 <span class="s">u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'</span>
