@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 import os
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
 from linkedin import __version__
 
 
@@ -25,7 +31,7 @@ setup(name='python-linkedin',
       author_email='ozgurvt@gmail.com',
       maintainer='Ozgur Vatansever',
       maintainer_email='ozgurvt@gmail.com',
-      url='http://ozgur.github.com/python-linkedin/',
+      url='https://github.com/ozgur/python-linkedin/',
       license='MIT',
       packages=['linkedin'],
       zip_safe=False,
