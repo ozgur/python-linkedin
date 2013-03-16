@@ -14,7 +14,7 @@ You can install **python-linkedin** library via pip:
 
 .. code-block:: bash
 
-    $ pip install python-linkedin
+    $ pip install py-linkedin
 
 API Keys
 --------------------
