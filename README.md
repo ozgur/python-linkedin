@@ -14,7 +14,7 @@ This library provides a pure python interface for the LinkedIn **Connection**, *
 
 You can install **python-linkedin** library via pip:
 
-    $ pip install py-linkedin
+    $ pip install python-linkedin
 
 ## API Keys
 

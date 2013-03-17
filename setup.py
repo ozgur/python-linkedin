@@ -13,7 +13,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     long_description = readme.read()
 
 
-setup(name='py-linkedin',
+setup(name='python-linkedin',
       version=__version__,
       description='Python Interface to the LinkedIn API',
       long_description=long_description,
