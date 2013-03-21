@@ -355,12 +355,10 @@ class LinkedInApplication(object):
         post = {'id': company_id}
         try:
             response = self.make_request('POST', url, data=json.dumps(post))
-            response = response.json()
+            response.raise_for_status()
         except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
-            if not self.request_succeeded(response):
-                raise LinkedInError(response)
             return True
 
     def unfollow_company(self, company_id):

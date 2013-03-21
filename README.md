@@ -116,11 +116,11 @@ application.get_connections()
    u'siteStandardProfileRequest': {u'url': u'http://www.linkedin.com/profile/view?id=049430532&authType=name&authToken=16V8&trk=api*a101945*s101945*'}},
    ....
 
-application.get_connections(selectors=['headline, 'first-name', 'last-name'], params={'start':10, 'count':5})
+application.get_connections(selectors=['headline', 'first-name', 'last-name'], params={'start':10, 'count':5})
 ```
 
 ## Search API
-There are 2 types of Search APIs. One is the **People Search** API, second one is the **Company Search** API.
+There are 3 types of Search APIs. One is the **People Search** API, second one is the **Company Search** API and the last one is **Jobs Search** API.
 
 The People Search API returns information about people. It lets you implement most of what shows up when you do a search for "People" in the top right box on LinkedIn.com.
 You can get more information from [here](http://developers.linkedin.com/documents/people-search-api).
@@ -133,7 +133,7 @@ application.search_profile(selectors=[{'people': ['first-name', 'last-name']}], 
   u'_start': 0,
   u'_total': 2,
   u'values': [
-   {u'firstName': u'John', u'lastName': Doe'},
+   {u'firstName': u'John', u'lastName': 'Doe'},
    {u'firstName': u'Jane', u'lastName': u'Doe'}
   ]}}
 ```
@@ -179,6 +179,21 @@ application.search_company(selectors=[{'companies': ['name', 'universal-name', '
     u'websiteUrl': u'http://www.truste.com/'}]}}
 ```
 
+The Job Search API enables search across LinkedIn's job postings. You can get more information from [here](http://developers.linkedin.com/documents/job-search-api).
+
+```python
+application.search_job(selectors=[{'jobs': ['id', 'customer-job-code', 'posting-date']}], params={'title': 'python', 'count': 2})
+{u'jobs': {u'_count': 2,
+  u'_start': 0,
+  u'_total': 206747,
+  u'values': [{u'customerJobCode': u'0006YT23WQ',
+    u'id': 5174636,
+    u'postingDate': {u'day': 21, u'month': 3, u'year': 2013}},
+   {u'customerJobCode': u'00023CCVC2',
+    u'id': 5174634,
+    u'postingDate': {u'day': 21, u'month': 3, u'year': 2013}}]}}
+```
+
 ## Group API
 The Groups API provides rich access to read and interact with LinkedIn’s groups functionality. You can get more information from [here](http://developers.linkedin.com/documents/groups-api). By the help of the interface, you can fetch group details, get your group memberships as well as your posts for a specific group which you are a member of.
 
@@ -195,7 +210,7 @@ application.get_memberships(params={'count': 20})
 application.get_posts(41001)
 ```
 
-You can also submit a new posts into a specific group.
+You can also submit a new post into a specific group.
 
 ```python
 title = 'Scala for the Impatient'
@@ -213,35 +228,142 @@ The Company API:
  * Returns basic company profile data, such as name, website, and industry.
  * Returns handles to additional company content, such as RSS stream and Twitter feed.
 
-For more information, you can check out the documentation [here](http://developers.linkedin.com/documents/company-lookup-api-and-fields).
-
+You can query a company with either its **ID** or **Universal Name**. For more information, you can check out the documentation [here](http://developers.linkedin.com/documents/company-lookup-api-and-fields).
 
 ```python
-result = api.send_message('This is a subject', 'This is the body')
-if result is False:
-    print api.get_error()
-u'Missing {mailbox-item/recipients/recipient} element'
+application.get_companies(company_ids=[1035], universal_names=['apple'], selectors=['name'], params={'is-company-admin': 'true'})
+# 1035 is Microsoft
+# The URL is as follows: https://api.linkedin.com/v1/companies::(1035,universal-name=apple)?is-company-admin=true
+
+{u'_total': 2,
+ u'values': [{u'_key': u'1035', u'name': u'Microsoft'},
+  {u'_key': u'universal-name=apple', u'name': u'Apple'}]}
+
+# Get the latest updates about Microsoft
+application.get_company_updates(1035, params={'count': 2})
+{u'_count': 2,
+ u'_start': 0,
+ u'_total': 58,
+ u'values': [{u'isCommentable': True,
+   u'isLikable': True,
+   u'isLiked': False,
+   u'numLikes': 0,
+   u'timestamp': 1363855486620,
+   u'updateComments': {u'_total': 0},
+   u'updateContent': {u'company': {u'id': 1035, u'name': u'Microsoft'},
+    u'companyJobUpdate': {u'action': {u'code': u'created'},
+     u'job': {u'company': {u'id': 1035, u'name': u'Microsoft'},
+      u'description': u'Job Category: SalesLocation: Sacramento, CA, USJob ID: 812346-106756Division: Retail StoresStore...',
+      u'id': 5173319,
+      u'locationDescription': u'Sacramento, CA, US',
+      u'position': {u'title': u'Store Manager, Specialty Store'},
+      u'siteJobRequest': {u'url': u'http://www.linkedin.com/jobs?viewJob=&jobId=5173319'}}}},
+   u'updateKey': u'UNIU-c1035-5720424522989961216-FOLLOW_CMPY',
+   u'updateType': u'CMPY'},
+  {u'isCommentable': True,
+   u'isLikable': True,
+   u'isLiked': False,
+   u'numLikes': 0,
+   u'timestamp': 1363855486617,
+   u'updateComments': {u'_total': 0},
+   u'updateContent': {u'company': {u'id': 1035, u'name': u'Microsoft'},
+    u'companyJobUpdate': {u'action': {u'code': u'created'},
+     u'job': {u'company': {u'id': 1035, u'name': u'Microsoft'},
+      u'description': u'Job Category: Software Engineering: TestLocation: Redmond, WA, USJob ID: 794953-81760Division:...',
+      u'id': 5173313,
+      u'locationDescription': u'Redmond, WA, US',
+      u'position': {u'title': u'Software Development Engineer in Test, Senior-IEB-MSCIS (794953)'},
+      u'siteJobRequest': {u'url': u'http://www.linkedin.com/jobs?viewJob=&jobId=5173313'}}}},
+   u'updateKey': u'UNIU-c1035-5720424522977378304-FOLLOW_CMPY',
+   u'updateType': u'CMPY'}]}
 ```
 
-You can set the parameter **send_yourself** to True, so you can send the message to yourself.
+You can follow or unfollow a specific company as well.
 
 ```python
-api.send_message('This is a subject', 'This is the body', ['ID1', 'ID2', 'ID3'], send_yourself=True)
-```
-
-You can send an invitation to your friend's email to invite them to join your LinkedIn network by simply calling **.send_invitation()** method.
-
-```python
-result = api.send_invitation('This is a subject', 'Join to my network', 'Ozgur', 'Vatansever', 'ozgurvt@gmail.com')
-print result
+application.follow_company(1035)
 True
 
-result = api.send_invitation('This is a subject', 'Join to my network', 'Ozgur', 'Vatansever', 'ozgurvt')
-if result is False:
-    print api.get_error()
-u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'
+application.unfollow_company(1035)
+True
 ```
 
+## Job API
+The Jobs APIs provide access to view jobs and job data. You can get more information from its [documentation](http://developers.linkedin.com/documents/job-lookup-api-and-fields).
+
+```python
+application.get_job(job_id=5174636)
+{u'active': True,
+ u'company': {u'id': 2329, u'name': u'Schneider Electric'},
+ u'descriptionSnippet': u"The Industrial Accounts Sales Manager is a quota carrying senior sales position principally responsible for generating new sales and growing company's share of wallet within the industrial business, contracting business and consulting engineering business. The primary objective is to build and establish strong and lasting relationships with technical teams and at executive level within specific in",
+ u'id': 5174636,
+ u'position': {u'title': u'Industrial Accounts Sales Manager'},
+ u'postingTimestamp': 1363860033000}
+```
+
+You can also fetch you job bookmarks.
+
+```python
+application.get_job_bookmarks()
+{u'_total': 0}
+```
+
+## Share API
+Network updates serve as one of the core experiences on LinkedIn, giving users the ability to share rich content to their professional network. You can get more information from [here](http://developers.linkedin.com/documents/share-api).
+
+```
+application.submit_share('Posting from the API using JSON', 'A title for your share', None, 'http://www.linkedin.com', 'http://d.pr/3OWS')
+{'updateKey': u'UNIU-8219502-5705061301949063168-SHARE'
+ 'updateURL': 'http://www.linkedin.com/updates?discuss=&amp;scope=8219502&amp;stype=M&amp;topic=5705061301949063168&amp;type=U&amp;a=aovi'}
+```
+
+## Network API
+The Get Network Updates API returns the users network updates, which is the LinkedIn term for the user's feed. This call returns most of what shows up in the middle column of the LinkedIn.com home page, either for the member or the member's connections. You can get more information from [here](http://developers.linkedin.com/documents/get-network-updates-and-statistics-api).
+
+There are many network update types. You can look at them by importing **NETWORK_UPDATES** enumeration.
+
+```python
+from linkedin.linkedin import NETWORK_UPDATES
+print NETWORK_UPDATES.enums
+{'APPLICATION': 'APPS',
+ 'CHANGED_PROFILE': 'PRFU',
+ 'COMPANY': 'CMPY',
+ 'CONNECTION': 'CONN',
+ 'EXTENDED_PROFILE': 'PRFX',
+ 'GROUP': 'JGRP',
+ 'JOB': 'JOBS',
+ 'PICTURE': 'PICT',
+ 'SHARED': 'SHAR',
+ 'VIRAL': 'VIRL'}
+
+update_types = (NETWORK_UPDATES.CONNECTION, NETWORK_UPDATES.PICTURE)
+application.get_network_updates(update_types)
+
+{u'_total': 1,
+ u'values': [{u'isCommentable': True,
+   u'isLikable': True,
+   u'isLiked': False,
+   u'numLikes': 0,
+   u'timestamp': 1363470126509,
+   u'updateComments': {u'_total': 0},
+   u'updateContent': {u'person': {u'apiStandardProfileRequest': {u'headers': {u'_total': 1,
+       u'values': [{u'name': u'x-li-auth-token', u'value': u'name:Egbj'}]},
+      u'url': u'http://api.linkedin.com/v1/people/COjFALsKDP'},
+     u'firstName': u'ozgur',
+     u'headline': u'This is my headline',
+     u'id': u'COjFALsKDP',
+     u'lastName': u'vatansever',
+     u'siteStandardProfileRequest': {u'url': u'http://www.linkedin.com/profile/view?id=46113651&authType=name&authToken=Egbj&trk=api*a101945*s101945*'}}},
+   u'updateKey': u'UNIU-46113651-5718808205493026816-SHARE',
+   u'updateType': u'SHAR'}]}
+```
+## Invitation API
+The Invitation API allows your users to invite people they find in your application to their LinkedIn network. You can get more information from [here](http://developers.linkedin.com/documents/invitation-api).
+
+
+```python
+
+```
 ## Throttle Limits
 
 LinkedIn API keys are throttled by default. You should take a look at [http://developer.linkedin.com/docs/DOC-1112](http://developer.linkedin.com/docs/DOC-1112) to get more information.
