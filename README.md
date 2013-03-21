@@ -4,7 +4,7 @@ Python interface to the LinkedIn API
 
 [![LinkedIn](http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png)](http://developer.linkedin.com)
 
-This library provides a pure python interface for the LinkedIn **Connection**, **Profile**, **Search**, **Status**, **Messaging** and **Invitation** APIs.
+This library provides a pure Python interface to the LinkedIn  **Profile**, **Group**, **Company**, **Jobs**, **Search**, **Share**, **Network** and **Invitation** REST APIs.
 
 [LinkedIn](http://developer.linkedin.com) provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
 
@@ -16,68 +16,87 @@ You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
 
-## API Keys
+## Authentication
 
-In order to use the LinkedIn API, you have an **application key** and **application secret**. For debugging purposes I can provide you those. You can use the following as api key and secret:
+LinkedIn REST API uses **Oauth 2.0** protocol for authentication. In order to use the LinkedIn API, you have an **application key** and **application secret**. You can get more detail from [here](http://developers.linkedin.com/documents/authentication).
+
+For debugging purposes you can use the credentials below. It belongs to my test application. Nothing's harmful.
 
 ```python
 KEY = 'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'
 SECRET = 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'
 ```
-
 You can also get those keys from [here](http://developer.linkedin.com/rest).
 
-
-## Quick Usage From Python Interpreter
-
-For testing the library using an interpreter, use the quick helper.
-
-```python
-from linkedin import helper
-api = helper.quick_api(<Your KEY>, <Your SECRET>)
-```
-
-This will print a url to the screen. Go into this URL using a browser, after you login, the method will return with an API object you can now use.
-
-```python
-api.get_profile()
-```
-
-## Usage
-
-You can use **http://localhost** as the return url. Return URL is a url where LinkedIn redirects the user after he/she grants access to your application.
+LinkedIn redirects the user back to your website's URL after granting access (giving proper permissions) to your application. We call that url **RETURN URL**. Assuming your return url is **http://localhost:8000**, you can write something like this:
 
 ```python
 from linkedin import linkedin
 
-RETURN_URL = 'http://localhost'
-api = linkedin.LinkedIn(<Your KEY>, <Your SECRET>, RETURN_URL)
-result = api.request_token()
-if result is True:
-    api.get_authorize_url() # open this url on your browser
-```
+API_KEY = 'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'
+API_SECRET = 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'
+RETURN_URL = 'http://localhost:8000'
 
-When you grant access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:
+authentication = linkedin.LinkedInAuthentication(API_KEY, API_SECRET, RETURN_URL, linkedin.PERMISSIONS.enums.values())
+print authentication.authorization_url  # open this url on your browser
+application = linkedin.LinkedInApplication(authentication)
+```
+When you grant access to the application, you will be redirected to the return url with the following query strings appended to your **RETURN_URL**:
 
 ```python
-"http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&oauth_verifier=04874"
+"http://localhost:8000/?code=AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8&state=ea34a04b91c72863c82878d2b8f1836c"
 ```
 
-This means that the **auth_verifier** value is 04874. After you get the verifier, you call the **.access_token()** method to get the access token.
+This means that the value of the **authorization_code** is **AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8**. After setting it by hand, we can call the **.get_access_token()** to get the actual token.
 
 ```python
-result = api.access_token(verifier='04874')
-if result is True:
-    profile = api.get_profile()
-    print profile.id
+authentication.authorization_code = 'AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8'
+authentication.get_access_token()
 ```
 
-If you know your public url, call the method above with your public url for more information.
+## Quick Usage From Python Interpreter
+
+For testing the library using an interpreter, you can benefit from the test server.
 
 ```python
-profile = api.get_profile(member_id=None, url='http://www.linkedin.com/in/ozgurv')
-print profile.id, profile.first_name, profile.last_name, profile.picture_url
+from linkedin import server
+application = server.quick_api(KEY, SECRET)
 ```
+This will print a url to the screen. Go into this URL using a browser to grant access to the test application. After you do so, the method will return with an API object you can now use.
+
+## Profile API
+The Profile API returns a member's LinkedIn profile. You can use this call to return one of two versions of a user's profile which are **public profile** and **standart profile**. For more information, check out the [documentation](http://developers.linkedin.com/documents/profile-api).
+
+```python
+application.get_profile()
+{u'firstName': u'ozgur',
+ u'headline': u'This is my headline',
+ u'lastName': u'vatansever',
+ u'siteStandardProfileRequest': {u'url': u'http://www.linkedin.com/profile/view?id=46113651&authType=name&authToken=Egbj&trk=api*a101945*s101945*'}}
+```
+
+There are many **field selectors** that enable the client fetch more information from the API. All of them used by each API are listed [here](http://developers.linkedin.com/documents/field-selectors).
+
+```python
+application.get_profile(selectors=['id', 'first-name', 'last-name', 'location', 'distance', 'num-connections', 'skills', 'educations'])
+{u'distance': 0,
+ u'educations': {u'_total': 1,
+  u'values': [{u'activities': u'This is my activity and society field',
+    u'degree': u'graduate',
+    u'endDate': {u'year': 2009},
+    u'fieldOfStudy': u'computer science',
+    u'id': 42611838,
+    u'notes': u'This is my additional notes field',
+    u'schoolName': u'\u0130stanbul Bilgi \xdcniversitesi',
+    u'startDate': {u'year': 2004}}]},
+ u'firstName': u'ozgur',
+ u'id': u'COjFALsKDP',
+ u'lastName': u'vatansever',
+ u'location': {u'country': {u'code': u'tr'}, u'name': u'Istanbul, Turkey'},
+ u'numConnections': 13}
+```
+
+
 
 To fetch your connections, simply call:
 
