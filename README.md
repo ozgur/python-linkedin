@@ -62,7 +62,7 @@ For testing the library using an interpreter, you can benefit from the test serv
 from linkedin import server
 application = server.quick_api(KEY, SECRET)
 ```
-This will print a url to the screen. Go into this URL using a browser to grant access to the test application. After you do so, the method will return with an API object you can now use.
+This will print the authorization url to the screen. Go into that URL using a browser to grant access to the application. After you do so, the method will return with an API object you can now use.
 
 ## Profile API
 The Profile API returns a member's LinkedIn profile. You can use this call to return one of two versions of a user's profile which are **public profile** and **standart profile**. For more information, check out the [documentation](http://developers.linkedin.com/documents/profile-api).
@@ -96,22 +96,125 @@ application.get_profile(selectors=['id', 'first-name', 'last-name', 'location', 
  u'numConnections': 13}
 ```
 
+## Connections API
+The Connections API returns a list of **1st degree** connections for a user who has granted access to their account. For more information, you check out its [documentation](http://developers.linkedin.com/documents/connections-api).
 
-
-To fetch your connections, simply call:
-
-```python
-connections = api.get_connections()
-```
-
-You can set/clear your status by calling **.set_status()** or **.clear_status()** methods. If you get False as the result, you can get the error by calling **.get_error()** method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1007](http://developer.linkedin.com/docs/DOC-1007)
+To fetch your connections, you simply call **.get_connections()** method with proper GET querystring:
 
 ```python
-result = api.set_status('This is my status.')
-result = api.clear_status()
+application.get_connections()
+{u'_total': 13,
+ u'values': [{u'apiStandardProfileRequest': {u'headers': {u'_total': 1,
+     u'values': [{u'name': u'x-li-auth-token', u'value': u'name:16V1033'}]},
+    u'url': u'http://api.linkedin.com/v1/people/lddvGtD5xk'},
+   u'firstName': u'John',
+   u'headline': u'Ruby',
+   u'id': u'2323SDFSsfd34',
+   u'industry': u'Computer Software',
+   u'lastName': u'DOE',
+   u'location': {u'country': {u'code': u'tr'}, u'name': u'Istanbul, Turkey'},
+   u'siteStandardProfileRequest': {u'url': u'http://www.linkedin.com/profile/view?id=049430532&authType=name&authToken=16V8&trk=api*a101945*s101945*'}},
+   ....
+
+application.get_connections(selectors=['headline, 'first-name', 'last-name'], params={'start':10, 'count':5})
 ```
 
-You can send a message to yourself or your connections' inboxes by simply calling **.send_message()** method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at [http://developer.linkedin.com/docs/DOC-1044](http://developer.linkedin.com/docs/DOC-1044)
+## Search API
+There are 2 types of Search APIs. One is the **People Search** API, second one is the **Company Search** API.
+
+The People Search API returns information about people. It lets you implement most of what shows up when you do a search for "People" in the top right box on LinkedIn.com.
+You can get more information from [here](http://developers.linkedin.com/documents/people-search-api).
+
+```python
+application.search_profile(selectors=[{'people': ['first-name', 'last-name']}], params={'keywords': 'apple microsoft'})
+# Search URL is https://api.linkedin.com/v1/people-search:(people:(first-name,last-name))?keywords=apple%20microsoft
+
+{u'people': {u'_count': 10,
+  u'_start': 0,
+  u'_total': 2,
+  u'values': [
+   {u'firstName': u'John', u'lastName': Doe'},
+   {u'firstName': u'Jane', u'lastName': u'Doe'}
+  ]}}
+```
+
+The Company Search API enables search across company pages. You can get more information from [here](http://developers.linkedin.com/documents/company-search).
+
+```python
+application.search_company(selectors=[{'companies': ['name', 'universal-name', 'website-url']}], params={'keywords': 'apple microsoft'})
+# Search URL is https://api.linkedin.com/v1/company-search:(companies:(name,universal-name,website-url))?keywords=apple%20microsoft
+
+{u'companies': {u'_count': 10,
+  u'_start': 0,
+  u'_total': 1064,
+  u'values': [{u'name': u'Netflix',
+    u'universalName': u'netflix',
+    u'websiteUrl': u'http://netflix.com'},
+   {u'name': u'Alliance Data',
+    u'universalName': u'alliance-data',
+    u'websiteUrl': u'www.alliancedata.com'},
+   {u'name': u'GHA Technologies',
+    u'universalName': u'gha-technologies',
+    u'websiteUrl': u'www.gha-associates.com'},
+   {u'name': u'Intelligent Decisions',
+    u'universalName': u'intelligent-decisions',
+    u'websiteUrl': u'http://www.intelligent.net'},
+   {u'name': u'Mindfire Solutions',
+    u'universalName': u'mindfire-solutions',
+    u'websiteUrl': u'www.mindfiresolutions.com'},
+   {u'name': u'Babel Media',
+    u'universalName': u'babel-media',
+    u'websiteUrl': u'http://www.babelmedia.com/'},
+   {u'name': u'Milestone Technologies',
+    u'universalName': u'milestone-technologies',
+    u'websiteUrl': u'www.milestonepowered.com'},
+   {u'name': u'Denali Advanced Integration',
+    u'universalName': u'denali-advanced-integration',
+    u'websiteUrl': u'www.denaliai.com'},
+   {u'name': u'MicroAge',
+    u'universalName': u'microage',
+    u'websiteUrl': u'www.microage.com'},
+   {u'name': u'TRUSTe',
+    u'universalName': u'truste',
+    u'websiteUrl': u'http://www.truste.com/'}]}}
+```
+
+## Group API
+The Groups API provides rich access to read and interact with LinkedIn’s groups functionality. You can get more information from [here](http://developers.linkedin.com/documents/groups-api). By the help of the interface, you can fetch group details, get your group memberships as well as your posts for a specific group which you are a member of.
+
+```python
+application.get_group(41001)
+{u'id': u'41001', u'name': u'Object Oriented Programming'}
+
+application.get_memberships(params={'count': 20})
+{u'_total': 1,
+ u'values': [{u'_key': u'25827',
+   u'group': {u'id': u'25827', u'name': u'Python Community'},
+   u'membershipState': {u'code': u'member'}}]}
+
+application.get_posts(41001)
+```
+
+You can also submit a new posts into a specific group.
+
+```python
+title = 'Scala for the Impatient'
+summary = 'A new book has been published'
+submitted_url = 'http://horstmann.com/scala/'
+submitted_image_url = 'http://horstmann.com/scala/images/cover.png'
+description = 'It is a great book for the keen beginners. Check it out!'
+
+application.submit_group_post(41001, title, summary, submitted_url, submitted_image_url, description)
+```
+
+## Company API
+The Company API:
+ * Retrieves and displays one or more company profiles based on the company ID or universal name.
+ * Returns basic company profile data, such as name, website, and industry.
+ * Returns handles to additional company content, such as RSS stream and Twitter feed.
+
+For more information, you can check out the documentation [here](http://developers.linkedin.com/documents/company-lookup-api-and-fields).
+
 
 ```python
 result = api.send_message('This is a subject', 'This is the body')
