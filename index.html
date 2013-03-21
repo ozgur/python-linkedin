@@ -34,7 +34,7 @@
 
 <p><a href="http://developer.linkedin.com"><img src="http://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png" alt="LinkedIn"></a></p>
 
-<p>This library provides a pure python interface for the LinkedIn <strong>Connection</strong>, <strong>Profile</strong>, <strong>Search</strong>, <strong>Status</strong>, <strong>Messaging</strong> and <strong>Invitation</strong> APIs.</p>
+<p>This library provides a pure Python interface to the LinkedIn <strong>Profile</strong>, <strong>Group</strong>, <strong>Company</strong>, <strong>Jobs</strong>, <strong>Search</strong>, <strong>Share</strong>, <strong>Network</strong> and <strong>Invitation</strong> REST APIs.</p>
 
 <p><a href="http://developer.linkedin.com">LinkedIn</a> provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.</p>
 
@@ -47,9 +47,11 @@
 <pre><code>$ pip install python-linkedin
 </code></pre>
 
-<h2>API Keys</h2>
+<h2>Authentication</h2>
 
-<p>In order to use the LinkedIn API, you have an <strong>application key</strong> and <strong>application secret</strong>. For debugging purposes I can provide you those. You can use the following as api key and secret:</p>
+<p>LinkedIn REST API uses <strong>Oauth 2.0</strong> protocol for authentication. In order to use the LinkedIn API, you have an <strong>application key</strong> and <strong>application secret</strong>. You can get more detail from <a href="http://developers.linkedin.com/documents/authentication">here</a>.</p>
+
+<p>For debugging purposes you can use the credentials below. It belongs to my test application. Nothing's harmful.</p>
 
 <div class="highlight"><pre><span class="n">KEY</span> <span class="o">=</span> <span class="s">'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'</span>
 <span class="n">SECRET</span> <span class="o">=</span> <span class="s">'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'</span>
@@ -57,90 +59,356 @@
 
 <p>You can also get those keys from <a href="http://developer.linkedin.com/rest">here</a>.</p>
 
-<h2>Quick Usage From Python Interpreter</h2>
-
-<p>For testing the library using an interpreter, use the quick helper.</p>
-
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin</span> <span class="kn">import</span> <span class="n">helper</span>
-<span class="n">api</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">quick_api</span><span class="p">(</span><span class="o">&lt;</span><span class="n">Your</span> <span class="n">KEY</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Your</span> <span class="n">SECRET</span><span class="o">&gt;</span><span class="p">)</span>
-</pre></div>
-
-<p>This will print a url to the screen. Go into this URL using a browser, after you login, the method will return with an API object you can now use.</p>
-
-<div class="highlight"><pre><span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
-</pre></div>
-
-<h2>Usage</h2>
-
-<p>You can use <strong>http://localhost</strong> as the return url. Return URL is a url where LinkedIn redirects the user after he/she grants access to your application.</p>
+<p>LinkedIn redirects the user back to your website's URL after granting access (giving proper permissions) to your application. We call that url <strong>RETURN URL</strong>. Assuming your return url is <strong>http://localhost:8000</strong>, you can write something like this:</p>
 
 <div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin</span> <span class="kn">import</span> <span class="n">linkedin</span>
 
-<span class="n">RETURN_URL</span> <span class="o">=</span> <span class="s">'http://localhost'</span>
-<span class="n">api</span> <span class="o">=</span> <span class="n">linkedin</span><span class="o">.</span><span class="n">LinkedIn</span><span class="p">(</span><span class="o">&lt;</span><span class="n">Your</span> <span class="n">KEY</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Your</span> <span class="n">SECRET</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">RETURN_URL</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">request_token</span><span class="p">()</span>
-<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">api</span><span class="o">.</span><span class="n">get_authorize_url</span><span class="p">()</span> <span class="c"># open this url on your browser</span>
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="s">'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'</span>
+<span class="n">API_SECRET</span> <span class="o">=</span> <span class="s">'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'</span>
+<span class="n">RETURN_URL</span> <span class="o">=</span> <span class="s">'http://localhost:8000'</span>
+
+<span class="n">authentication</span> <span class="o">=</span> <span class="n">linkedin</span><span class="o">.</span><span class="n">LinkedInAuthentication</span><span class="p">(</span><span class="n">API_KEY</span><span class="p">,</span> <span class="n">API_SECRET</span><span class="p">,</span> <span class="n">RETURN_URL</span><span class="p">,</span> <span class="n">linkedin</span><span class="o">.</span><span class="n">PERMISSIONS</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="k">print</span> <span class="n">authentication</span><span class="o">.</span><span class="n">authorization_url</span>  <span class="c"># open this url on your browser</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">linkedin</span><span class="o">.</span><span class="n">LinkedInApplication</span><span class="p">(</span><span class="n">authentication</span><span class="p">)</span>
 </pre></div>
 
-<p>When you grant access to the application, you will be redirected to the return url with the following query strings appended to your RETURN_URL:</p>
+<p>When you grant access to the application, you will be redirected to the return url with the following query strings appended to your <strong>RETURN_URL</strong>:</p>
 
-<div class="highlight"><pre><span class="s">"http://localhost/?oauth_token=0b27806e-feec-41d4-aac5-619ba43770f1&amp;oauth_verifier=04874"</span>
+<div class="highlight"><pre><span class="s">"http://localhost:8000/?code=AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8&amp;state=ea34a04b91c72863c82878d2b8f1836c"</span>
 </pre></div>
 
-<p>This means that the <strong>auth_verifier</strong> value is 04874. After you get the verifier, you call the <strong>.access_token()</strong> method to get the access token.</p>
+<p>This means that the value of the <strong>authorization_code</strong> is <strong>AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8</strong>. After setting it by hand, we can call the <strong>.get_access_token()</strong> to get the actual token.</p>
 
-<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">access_token</span><span class="p">(</span><span class="n">verifier</span><span class="o">=</span><span class="s">'04874'</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">profile</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
-    <span class="k">print</span> <span class="n">profile</span><span class="o">.</span><span class="n">id</span>
+<div class="highlight"><pre><span class="n">authentication</span><span class="o">.</span><span class="n">authorization_code</span> <span class="o">=</span> <span class="s">'AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8'</span>
+<span class="n">authentication</span><span class="o">.</span><span class="n">get_access_token</span><span class="p">()</span>
 </pre></div>
 
-<p>If you know your public url, call the method above with your public url for more information.</p>
+<h2>Quick Usage From Python Interpreter</h2>
 
-<div class="highlight"><pre><span class="n">profile</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_profile</span><span class="p">(</span><span class="n">member_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s">'http://www.linkedin.com/in/ozgurv'</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">profile</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">picture_url</span>
+<p>For testing the library using an interpreter, you can benefit from the test server.</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin</span> <span class="kn">import</span> <span class="n">server</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">quick_api</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">SECRET</span><span class="p">)</span>
 </pre></div>
 
-<p>To fetch your connections, simply call:</p>
+<p>This will print the authorization url to the screen. Go into that URL using a browser to grant access to the application. After you do so, the method will return with an API object you can now use.</p>
 
-<div class="highlight"><pre><span class="n">connections</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_connections</span><span class="p">()</span>
+<h2>Profile API</h2>
+
+<p>The Profile API returns a member's LinkedIn profile. You can use this call to return one of two versions of a user's profile which are <strong>public profile</strong> and <strong>standart profile</strong>. For more information, check out the <a href="http://developers.linkedin.com/documents/profile-api">documentation</a>.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
+<span class="p">{</span><span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'ozgur'</span><span class="p">,</span>
+ <span class="s">u'headline'</span><span class="p">:</span> <span class="s">u'This is my headline'</span><span class="p">,</span>
+ <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">u'vatansever'</span><span class="p">,</span>
+ <span class="s">u'siteStandardProfileRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://www.linkedin.com/profile/view?id=46113651&amp;authType=name&amp;authToken=Egbj&amp;trk=api*a101945*s101945*'</span><span class="p">}}</span>
 </pre></div>
 
-<p>You can set/clear your status by calling <strong>.set_status()</strong> or <strong>.clear_status()</strong> methods. If you get False as the result, you can get the error by calling <strong>.get_error()</strong> method. Status message should be less than 140 characters. If it is too long, it is shortened. For more information, you can take a look at <a href="http://developer.linkedin.com/docs/DOC-1007">http://developer.linkedin.com/docs/DOC-1007</a></p>
+<p>There are many <strong>field selectors</strong> that enable the client fetch more information from the API. All of them used by each API are listed <a href="http://developers.linkedin.com/documents/field-selectors">here</a>.</p>
 
-<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s">'This is my status.'</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">clear_status</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_profile</span><span class="p">(</span><span class="n">selectors</span><span class="o">=</span><span class="p">[</span><span class="s">'id'</span><span class="p">,</span> <span class="s">'first-name'</span><span class="p">,</span> <span class="s">'last-name'</span><span class="p">,</span> <span class="s">'location'</span><span class="p">,</span> <span class="s">'distance'</span><span class="p">,</span> <span class="s">'num-connections'</span><span class="p">,</span> <span class="s">'skills'</span><span class="p">,</span> <span class="s">'educations'</span><span class="p">])</span>
+<span class="p">{</span><span class="s">u'distance'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="s">u'educations'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'activities'</span><span class="p">:</span> <span class="s">u'This is my activity and society field'</span><span class="p">,</span>
+    <span class="s">u'degree'</span><span class="p">:</span> <span class="s">u'graduate'</span><span class="p">,</span>
+    <span class="s">u'endDate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'year'</span><span class="p">:</span> <span class="mi">2009</span><span class="p">},</span>
+    <span class="s">u'fieldOfStudy'</span><span class="p">:</span> <span class="s">u'computer science'</span><span class="p">,</span>
+    <span class="s">u'id'</span><span class="p">:</span> <span class="mi">42611838</span><span class="p">,</span>
+    <span class="s">u'notes'</span><span class="p">:</span> <span class="s">u'This is my additional notes field'</span><span class="p">,</span>
+    <span class="s">u'schoolName'</span><span class="p">:</span> <span class="s">u'</span><span class="se">\u0130</span><span class="s">stanbul Bilgi </span><span class="se">\xdc</span><span class="s">niversitesi'</span><span class="p">,</span>
+    <span class="s">u'startDate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'year'</span><span class="p">:</span> <span class="mi">2004</span><span class="p">}}]},</span>
+ <span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'ozgur'</span><span class="p">,</span>
+ <span class="s">u'id'</span><span class="p">:</span> <span class="s">u'COjFALsKDP'</span><span class="p">,</span>
+ <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">u'vatansever'</span><span class="p">,</span>
+ <span class="s">u'location'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'country'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'code'</span><span class="p">:</span> <span class="s">u'tr'</span><span class="p">},</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Istanbul, Turkey'</span><span class="p">},</span>
+ <span class="s">u'numConnections'</span><span class="p">:</span> <span class="mi">13</span><span class="p">}</span>
 </pre></div>
 
-<p>You can send a message to yourself or your connections' inboxes by simply calling <strong>.send_message()</strong> method. You can send your message at most 10 connections at a time. If you give more than ten IDs, the IDs after 10th one are ignored. For more information, you can take a look at <a href="http://developer.linkedin.com/docs/DOC-1044">http://developer.linkedin.com/docs/DOC-1044</a></p>
+<h2>Connections API</h2>
 
-<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'This is the body'</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
-    <span class="k">print</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
-<span class="s">u'Missing {mailbox-item/recipients/recipient} element'</span>
+<p>The Connections API returns a list of <strong>1st degree</strong> connections for a user who has granted access to their account. For more information, you check out its <a href="http://developers.linkedin.com/documents/connections-api">documentation</a>.</p>
+
+<p>To fetch your connections, you simply call <strong>.get_connections()</strong> method with proper GET querystring:</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_connections</span><span class="p">()</span>
+<span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+ <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'apiStandardProfileRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'headers'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'x-li-auth-token'</span><span class="p">,</span> <span class="s">u'value'</span><span class="p">:</span> <span class="s">u'name:16V1033'</span><span class="p">}]},</span>
+    <span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://api.linkedin.com/v1/people/lddvGtD5xk'</span><span class="p">},</span>
+   <span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'John'</span><span class="p">,</span>
+   <span class="s">u'headline'</span><span class="p">:</span> <span class="s">u'Ruby'</span><span class="p">,</span>
+   <span class="s">u'id'</span><span class="p">:</span> <span class="s">u'2323SDFSsfd34'</span><span class="p">,</span>
+   <span class="s">u'industry'</span><span class="p">:</span> <span class="s">u'Computer Software'</span><span class="p">,</span>
+   <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">u'DOE'</span><span class="p">,</span>
+   <span class="s">u'location'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'country'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'code'</span><span class="p">:</span> <span class="s">u'tr'</span><span class="p">},</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Istanbul, Turkey'</span><span class="p">},</span>
+   <span class="s">u'siteStandardProfileRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://www.linkedin.com/profile/view?id=049430532&amp;authType=name&amp;authToken=16V8&amp;trk=api*a101945*s101945*'</span><span class="p">}},</span>
+   <span class="o">....</span>
+
+<span class="n">application</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="n">selectors</span><span class="o">=</span><span class="p">[</span><span class="s">'headline'</span><span class="p">,</span> <span class="s">'first-name'</span><span class="p">,</span> <span class="s">'last-name'</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'start'</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s">'count'</span><span class="p">:</span><span class="mi">5</span><span class="p">})</span>
 </pre></div>
 
-<p>You can set the parameter <strong>send_yourself</strong> to True, so you can send the message to yourself.</p>
+<h2>Search API</h2>
 
-<div class="highlight"><pre><span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'This is the body'</span><span class="p">,</span> <span class="p">[</span><span class="s">'ID1'</span><span class="p">,</span> <span class="s">'ID2'</span><span class="p">,</span> <span class="s">'ID3'</span><span class="p">],</span> <span class="n">send_yourself</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<p>There are 3 types of Search APIs. One is the <strong>People Search</strong> API, second one is the <strong>Company Search</strong> API and the last one is <strong>Jobs Search</strong> API.</p>
+
+<p>The People Search API returns information about people. It lets you implement most of what shows up when you do a search for "People" in the top right box on LinkedIn.com.
+You can get more information from <a href="http://developers.linkedin.com/documents/people-search-api">here</a>.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">search_profile</span><span class="p">(</span><span class="n">selectors</span><span class="o">=</span><span class="p">[{</span><span class="s">'people'</span><span class="p">:</span> <span class="p">[</span><span class="s">'first-name'</span><span class="p">,</span> <span class="s">'last-name'</span><span class="p">]}],</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'keywords'</span><span class="p">:</span> <span class="s">'apple microsoft'</span><span class="p">})</span>
+<span class="c"># Search URL is https://api.linkedin.com/v1/people-search:(people:(first-name,last-name))?keywords=apple%20microsoft</span>
+
+<span class="p">{</span><span class="s">u'people'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_count'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+  <span class="s">u'_start'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">u'_total'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s">u'values'</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span><span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'John'</span><span class="p">,</span> <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">'Doe'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'Jane'</span><span class="p">,</span> <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">u'Doe'</span><span class="p">}</span>
+  <span class="p">]}}</span>
 </pre></div>
 
-<p>You can send an invitation to your friend's email to invite them to join your LinkedIn network by simply calling <strong>.send_invitation()</strong> method.</p>
+<p>The Company Search API enables search across company pages. You can get more information from <a href="http://developers.linkedin.com/documents/company-search">here</a>.</p>
 
-<div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">,</span> <span class="s">'ozgurvt@gmail.com'</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">result</span>
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">search_company</span><span class="p">(</span><span class="n">selectors</span><span class="o">=</span><span class="p">[{</span><span class="s">'companies'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'universal-name'</span><span class="p">,</span> <span class="s">'website-url'</span><span class="p">]}],</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'keywords'</span><span class="p">:</span> <span class="s">'apple microsoft'</span><span class="p">})</span>
+<span class="c"># Search URL is https://api.linkedin.com/v1/company-search:(companies:(name,universal-name,website-url))?keywords=apple%20microsoft</span>
+
+<span class="p">{</span><span class="s">u'companies'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_count'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+  <span class="s">u'_start'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1064</span><span class="p">,</span>
+  <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Netflix'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'netflix'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'http://netflix.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Alliance Data'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'alliance-data'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.alliancedata.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'GHA Technologies'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'gha-technologies'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.gha-associates.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Intelligent Decisions'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'intelligent-decisions'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'http://www.intelligent.net'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Mindfire Solutions'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'mindfire-solutions'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.mindfiresolutions.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Babel Media'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'babel-media'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'http://www.babelmedia.com/'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Milestone Technologies'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'milestone-technologies'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.milestonepowered.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Denali Advanced Integration'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'denali-advanced-integration'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.denaliai.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'MicroAge'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'microage'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'www.microage.com'</span><span class="p">},</span>
+   <span class="p">{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'TRUSTe'</span><span class="p">,</span>
+    <span class="s">u'universalName'</span><span class="p">:</span> <span class="s">u'truste'</span><span class="p">,</span>
+    <span class="s">u'websiteUrl'</span><span class="p">:</span> <span class="s">u'http://www.truste.com/'</span><span class="p">}]}}</span>
+</pre></div>
+
+<p>The Job Search API enables search across LinkedIn's job postings. You can get more information from <a href="http://developers.linkedin.com/documents/job-search-api">here</a>.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">search_job</span><span class="p">(</span><span class="n">selectors</span><span class="o">=</span><span class="p">[{</span><span class="s">'jobs'</span><span class="p">:</span> <span class="p">[</span><span class="s">'id'</span><span class="p">,</span> <span class="s">'customer-job-code'</span><span class="p">,</span> <span class="s">'posting-date'</span><span class="p">]}],</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'title'</span><span class="p">:</span> <span class="s">'python'</span><span class="p">,</span> <span class="s">'count'</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="p">{</span><span class="s">u'jobs'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_count'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s">u'_start'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">u'_total'</span><span class="p">:</span> <span class="mi">206747</span><span class="p">,</span>
+  <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'customerJobCode'</span><span class="p">:</span> <span class="s">u'0006YT23WQ'</span><span class="p">,</span>
+    <span class="s">u'id'</span><span class="p">:</span> <span class="mi">5174636</span><span class="p">,</span>
+    <span class="s">u'postingDate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'day'</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="s">u'month'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">u'year'</span><span class="p">:</span> <span class="mi">2013</span><span class="p">}},</span>
+   <span class="p">{</span><span class="s">u'customerJobCode'</span><span class="p">:</span> <span class="s">u'00023CCVC2'</span><span class="p">,</span>
+    <span class="s">u'id'</span><span class="p">:</span> <span class="mi">5174634</span><span class="p">,</span>
+    <span class="s">u'postingDate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'day'</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="s">u'month'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">u'year'</span><span class="p">:</span> <span class="mi">2013</span><span class="p">}}]}}</span>
+</pre></div>
+
+<h2>Group API</h2>
+
+<p>The Groups API provides rich access to read and interact with LinkedIn’s groups functionality. You can get more information from <a href="http://developers.linkedin.com/documents/groups-api">here</a>. By the help of the interface, you can fetch group details, get your group memberships as well as your posts for a specific group which you are a member of.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">41001</span><span class="p">)</span>
+<span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="s">u'41001'</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Object Oriented Programming'</span><span class="p">}</span>
+
+<span class="n">application</span><span class="o">.</span><span class="n">get_memberships</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
+<span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'_key'</span><span class="p">:</span> <span class="s">u'25827'</span><span class="p">,</span>
+   <span class="s">u'group'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="s">u'25827'</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Python Community'</span><span class="p">},</span>
+   <span class="s">u'membershipState'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'code'</span><span class="p">:</span> <span class="s">u'member'</span><span class="p">}}]}</span>
+
+<span class="n">application</span><span class="o">.</span><span class="n">get_posts</span><span class="p">(</span><span class="mi">41001</span><span class="p">)</span>
+</pre></div>
+
+<p>You can also submit a new post into a specific group.</p>
+
+<div class="highlight"><pre><span class="n">title</span> <span class="o">=</span> <span class="s">'Scala for the Impatient'</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="s">'A new book has been published'</span>
+<span class="n">submitted_url</span> <span class="o">=</span> <span class="s">'http://horstmann.com/scala/'</span>
+<span class="n">submitted_image_url</span> <span class="o">=</span> <span class="s">'http://horstmann.com/scala/images/cover.png'</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s">'It is a great book for the keen beginners. Check it out!'</span>
+
+<span class="n">application</span><span class="o">.</span><span class="n">submit_group_post</span><span class="p">(</span><span class="mi">41001</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">summary</span><span class="p">,</span> <span class="n">submitted_url</span><span class="p">,</span> <span class="n">submitted_image_url</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+</pre></div>
+
+<h2>Company API</h2>
+
+<p>The Company API:</p>
+
+<ul>
+<li>Retrieves and displays one or more company profiles based on the company ID or universal name.</li>
+<li>Returns basic company profile data, such as name, website, and industry.</li>
+<li>Returns handles to additional company content, such as RSS stream and Twitter feed.</li>
+</ul><p>You can query a company with either its <strong>ID</strong> or <strong>Universal Name</strong>. For more information, you can check out the documentation <a href="http://developers.linkedin.com/documents/company-lookup-api-and-fields">here</a>.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_companies</span><span class="p">(</span><span class="n">company_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1035</span><span class="p">],</span> <span class="n">universal_names</span><span class="o">=</span><span class="p">[</span><span class="s">'apple'</span><span class="p">],</span> <span class="n">selectors</span><span class="o">=</span><span class="p">[</span><span class="s">'name'</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'is-company-admin'</span><span class="p">:</span> <span class="s">'true'</span><span class="p">})</span>
+<span class="c"># 1035 is Microsoft</span>
+<span class="c"># The URL is as follows: https://api.linkedin.com/v1/companies::(1035,universal-name=apple)?is-company-admin=true</span>
+
+<span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+ <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'_key'</span><span class="p">:</span> <span class="s">u'1035'</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Microsoft'</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">u'_key'</span><span class="p">:</span> <span class="s">u'universal-name=apple'</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Apple'</span><span class="p">}]}</span>
+
+<span class="c"># Get the latest updates about Microsoft</span>
+<span class="n">application</span><span class="o">.</span><span class="n">get_company_updates</span><span class="p">(</span><span class="mi">1035</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="p">{</span><span class="s">u'_count'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+ <span class="s">u'_start'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="s">u'_total'</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span>
+ <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'isCommentable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLikable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLiked'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+   <span class="s">u'numLikes'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="s">u'timestamp'</span><span class="p">:</span> <span class="mi">1363855486620</span><span class="p">,</span>
+   <span class="s">u'updateComments'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+   <span class="s">u'updateContent'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'company'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="mi">1035</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Microsoft'</span><span class="p">},</span>
+    <span class="s">u'companyJobUpdate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'action'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'code'</span><span class="p">:</span> <span class="s">u'created'</span><span class="p">},</span>
+     <span class="s">u'job'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'company'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="mi">1035</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Microsoft'</span><span class="p">},</span>
+      <span class="s">u'description'</span><span class="p">:</span> <span class="s">u'Job Category: SalesLocation: Sacramento, CA, USJob ID: 812346-106756Division: Retail StoresStore...'</span><span class="p">,</span>
+      <span class="s">u'id'</span><span class="p">:</span> <span class="mi">5173319</span><span class="p">,</span>
+      <span class="s">u'locationDescription'</span><span class="p">:</span> <span class="s">u'Sacramento, CA, US'</span><span class="p">,</span>
+      <span class="s">u'position'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'title'</span><span class="p">:</span> <span class="s">u'Store Manager, Specialty Store'</span><span class="p">},</span>
+      <span class="s">u'siteJobRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://www.linkedin.com/jobs?viewJob=&amp;jobId=5173319'</span><span class="p">}}}},</span>
+   <span class="s">u'updateKey'</span><span class="p">:</span> <span class="s">u'UNIU-c1035-5720424522989961216-FOLLOW_CMPY'</span><span class="p">,</span>
+   <span class="s">u'updateType'</span><span class="p">:</span> <span class="s">u'CMPY'</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">u'isCommentable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLikable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLiked'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+   <span class="s">u'numLikes'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="s">u'timestamp'</span><span class="p">:</span> <span class="mi">1363855486617</span><span class="p">,</span>
+   <span class="s">u'updateComments'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+   <span class="s">u'updateContent'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'company'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="mi">1035</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Microsoft'</span><span class="p">},</span>
+    <span class="s">u'companyJobUpdate'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'action'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'code'</span><span class="p">:</span> <span class="s">u'created'</span><span class="p">},</span>
+     <span class="s">u'job'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'company'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="mi">1035</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Microsoft'</span><span class="p">},</span>
+      <span class="s">u'description'</span><span class="p">:</span> <span class="s">u'Job Category: Software Engineering: TestLocation: Redmond, WA, USJob ID: 794953-81760Division:...'</span><span class="p">,</span>
+      <span class="s">u'id'</span><span class="p">:</span> <span class="mi">5173313</span><span class="p">,</span>
+      <span class="s">u'locationDescription'</span><span class="p">:</span> <span class="s">u'Redmond, WA, US'</span><span class="p">,</span>
+      <span class="s">u'position'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'title'</span><span class="p">:</span> <span class="s">u'Software Development Engineer in Test, Senior-IEB-MSCIS (794953)'</span><span class="p">},</span>
+      <span class="s">u'siteJobRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://www.linkedin.com/jobs?viewJob=&amp;jobId=5173313'</span><span class="p">}}}},</span>
+   <span class="s">u'updateKey'</span><span class="p">:</span> <span class="s">u'UNIU-c1035-5720424522977378304-FOLLOW_CMPY'</span><span class="p">,</span>
+   <span class="s">u'updateType'</span><span class="p">:</span> <span class="s">u'CMPY'</span><span class="p">}]}</span>
+</pre></div>
+
+<p>You can follow or unfollow a specific company as well.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">follow_company</span><span class="p">(</span><span class="mi">1035</span><span class="p">)</span>
 <span class="bp">True</span>
 
-<span class="n">result</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="s">'This is a subject'</span><span class="p">,</span> <span class="s">'Join to my network'</span><span class="p">,</span> <span class="s">'Ozgur'</span><span class="p">,</span> <span class="s">'Vatansever'</span><span class="p">,</span> <span class="s">'ozgurvt'</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
-    <span class="k">print</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
-<span class="s">u'Invalid argument(s): {emailAddress=invalid_email [ozgurvt]}'</span>
+<span class="n">application</span><span class="o">.</span><span class="n">unfollow_company</span><span class="p">(</span><span class="mi">1035</span><span class="p">)</span>
+<span class="bp">True</span>
+</pre></div>
+
+<h2>Job API</h2>
+
+<p>The Jobs APIs provide access to view jobs and job data. You can get more information from its <a href="http://developers.linkedin.com/documents/job-lookup-api-and-fields">documentation</a>.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="mi">5174636</span><span class="p">)</span>
+<span class="p">{</span><span class="s">u'active'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+ <span class="s">u'company'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'id'</span><span class="p">:</span> <span class="mi">2329</span><span class="p">,</span> <span class="s">u'name'</span><span class="p">:</span> <span class="s">u'Schneider Electric'</span><span class="p">},</span>
+ <span class="s">u'descriptionSnippet'</span><span class="p">:</span> <span class="s">u"The Industrial Accounts Sales Manager is a quota carrying senior sales position principally responsible for generating new sales and growing company's share of wallet within the industrial business, contracting business and consulting engineering business. The primary objective is to build and establish strong and lasting relationships with technical teams and at executive level within specific in"</span><span class="p">,</span>
+ <span class="s">u'id'</span><span class="p">:</span> <span class="mi">5174636</span><span class="p">,</span>
+ <span class="s">u'position'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'title'</span><span class="p">:</span> <span class="s">u'Industrial Accounts Sales Manager'</span><span class="p">},</span>
+ <span class="s">u'postingTimestamp'</span><span class="p">:</span> <span class="mi">1363860033000</span><span class="p">}</span>
+</pre></div>
+
+<p>You can also fetch you job bookmarks.</p>
+
+<div class="highlight"><pre><span class="n">application</span><span class="o">.</span><span class="n">get_job_bookmarks</span><span class="p">()</span>
+<span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</pre></div>
+
+<h2>Share API</h2>
+
+<p>Network updates serve as one of the core experiences on LinkedIn, giving users the ability to share rich content to their professional network. You can get more information from <a href="http://developers.linkedin.com/documents/share-api">here</a>.</p>
+
+<pre><code>application.submit_share('Posting from the API using JSON', 'A title for your share', None, 'http://www.linkedin.com', 'http://d.pr/3OWS')
+{'updateKey': u'UNIU-8219502-5705061301949063168-SHARE'
+ 'updateURL': 'http://www.linkedin.com/updates?discuss=&amp;amp;scope=8219502&amp;amp;stype=M&amp;amp;topic=5705061301949063168&amp;amp;type=U&amp;amp;a=aovi'}
+</code></pre>
+
+<h2>Network API</h2>
+
+<p>The Get Network Updates API returns the users network updates, which is the LinkedIn term for the user's feed. This call returns most of what shows up in the middle column of the LinkedIn.com home page, either for the member or the member's connections. You can get more information from <a href="http://developers.linkedin.com/documents/get-network-updates-and-statistics-api">here</a>.</p>
+
+<p>There are many network update types. You can look at them by importing <strong>NETWORK_UPDATES</strong> enumeration.</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin.linkedin</span> <span class="kn">import</span> <span class="n">NETWORK_UPDATES</span>
+<span class="k">print</span> <span class="n">NETWORK_UPDATES</span><span class="o">.</span><span class="n">enums</span>
+<span class="p">{</span><span class="s">'APPLICATION'</span><span class="p">:</span> <span class="s">'APPS'</span><span class="p">,</span>
+ <span class="s">'CHANGED_PROFILE'</span><span class="p">:</span> <span class="s">'PRFU'</span><span class="p">,</span>
+ <span class="s">'COMPANY'</span><span class="p">:</span> <span class="s">'CMPY'</span><span class="p">,</span>
+ <span class="s">'CONNECTION'</span><span class="p">:</span> <span class="s">'CONN'</span><span class="p">,</span>
+ <span class="s">'EXTENDED_PROFILE'</span><span class="p">:</span> <span class="s">'PRFX'</span><span class="p">,</span>
+ <span class="s">'GROUP'</span><span class="p">:</span> <span class="s">'JGRP'</span><span class="p">,</span>
+ <span class="s">'JOB'</span><span class="p">:</span> <span class="s">'JOBS'</span><span class="p">,</span>
+ <span class="s">'PICTURE'</span><span class="p">:</span> <span class="s">'PICT'</span><span class="p">,</span>
+ <span class="s">'SHARED'</span><span class="p">:</span> <span class="s">'SHAR'</span><span class="p">,</span>
+ <span class="s">'VIRAL'</span><span class="p">:</span> <span class="s">'VIRL'</span><span class="p">}</span>
+
+<span class="n">update_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">NETWORK_UPDATES</span><span class="o">.</span><span class="n">CONNECTION</span><span class="p">,</span> <span class="n">NETWORK_UPDATES</span><span class="o">.</span><span class="n">PICTURE</span><span class="p">)</span>
+<span class="n">application</span><span class="o">.</span><span class="n">get_network_updates</span><span class="p">(</span><span class="n">update_types</span><span class="p">)</span>
+
+<span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'isCommentable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLikable'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+   <span class="s">u'isLiked'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+   <span class="s">u'numLikes'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="s">u'timestamp'</span><span class="p">:</span> <span class="mi">1363470126509</span><span class="p">,</span>
+   <span class="s">u'updateComments'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+   <span class="s">u'updateContent'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'person'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'apiStandardProfileRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'headers'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'_total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+       <span class="s">u'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">u'name'</span><span class="p">:</span> <span class="s">u'x-li-auth-token'</span><span class="p">,</span> <span class="s">u'value'</span><span class="p">:</span> <span class="s">u'name:Egbj'</span><span class="p">}]},</span>
+      <span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://api.linkedin.com/v1/people/COjFALsKDP'</span><span class="p">},</span>
+     <span class="s">u'firstName'</span><span class="p">:</span> <span class="s">u'ozgur'</span><span class="p">,</span>
+     <span class="s">u'headline'</span><span class="p">:</span> <span class="s">u'This is my headline'</span><span class="p">,</span>
+     <span class="s">u'id'</span><span class="p">:</span> <span class="s">u'COjFALsKDP'</span><span class="p">,</span>
+     <span class="s">u'lastName'</span><span class="p">:</span> <span class="s">u'vatansever'</span><span class="p">,</span>
+     <span class="s">u'siteStandardProfileRequest'</span><span class="p">:</span> <span class="p">{</span><span class="s">u'url'</span><span class="p">:</span> <span class="s">u'http://www.linkedin.com/profile/view?id=46113651&amp;authType=name&amp;authToken=Egbj&amp;trk=api*a101945*s101945*'</span><span class="p">}}},</span>
+   <span class="s">u'updateKey'</span><span class="p">:</span> <span class="s">u'UNIU-46113651-5718808205493026816-SHARE'</span><span class="p">,</span>
+   <span class="s">u'updateType'</span><span class="p">:</span> <span class="s">u'SHAR'</span><span class="p">}]}</span>
+</pre></div>
+
+<h2>Invitation API</h2>
+
+<p>The Invitation API allows your users to invite people they find in your application to their LinkedIn network. You can get more information from <a href="http://developers.linkedin.com/documents/invitation-api">here</a>.</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">linkedin.models</span> <span class="kn">import</span> <span class="n">LinkedInRecipient</span><span class="p">,</span> <span class="n">LinkedInInvitation</span>
+<span class="n">recipient</span> <span class="o">=</span> <span class="n">LinkedInRecipient</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">'john.doe@python.org'</span><span class="p">,</span> <span class="s">'John'</span><span class="p">,</span> <span class="s">'Doe'</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">recipient</span><span class="o">.</span><span class="n">json</span>
+<span class="p">{</span><span class="s">'person'</span><span class="p">:</span> <span class="p">{</span><span class="s">'_path'</span><span class="p">:</span> <span class="s">'/people/email=john.doe@python.org'</span><span class="p">,</span>
+  <span class="s">'first-name'</span><span class="p">:</span> <span class="s">'John'</span><span class="p">,</span>
+  <span class="s">'last-name'</span><span class="p">:</span> <span class="s">'Doe'</span><span class="p">}}</span>
+
+<span class="n">invitation</span> <span class="o">=</span> <span class="n">LinkedInInvitation</span><span class="p">(</span><span class="s">'Hello John'</span><span class="p">,</span> <span class="s">"What's up? Can I add you as a friend?"</span><span class="p">,</span> <span class="p">(</span><span class="n">recipient</span><span class="p">,),</span> <span class="s">'friend'</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">invitation</span><span class="o">.</span><span class="n">json</span>
+<span class="p">{</span><span class="s">'body'</span><span class="p">:</span> <span class="s">"What's up? Can I add you as a friend?"</span><span class="p">,</span>
+ <span class="s">'item-content'</span><span class="p">:</span> <span class="p">{</span><span class="s">'invitation-request'</span><span class="p">:</span> <span class="p">{</span><span class="s">'connect-type'</span><span class="p">:</span> <span class="s">'friend'</span><span class="p">}},</span>
+ <span class="s">'recipients'</span><span class="p">:</span> <span class="p">{</span><span class="s">'values'</span><span class="p">:</span> <span class="p">[{</span><span class="s">'person'</span><span class="p">:</span> <span class="p">{</span><span class="s">'_path'</span><span class="p">:</span> <span class="s">'/people/email=john.doe@python.org'</span><span class="p">,</span>
+     <span class="s">'first-name'</span><span class="p">:</span> <span class="s">'John'</span><span class="p">,</span>
+     <span class="s">'last-name'</span><span class="p">:</span> <span class="s">'Doe'</span><span class="p">}}]},</span>
+ <span class="s">'subject'</span><span class="p">:</span> <span class="s">'Hello John'</span><span class="p">}</span>
+
+<span class="n">application</span><span class="o">.</span><span class="n">send_invitation</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span>
+<span class="bp">True</span>
 </pre></div>
 
 <h2>Throttle Limits</h2>
 
-<p>LinkedIn API keys are throttled by default. You should take a look at <a href="http://developer.linkedin.com/docs/DOC-1112">http://developer.linkedin.com/docs/DOC-1112</a> to get more information.</p>
+<p>LinkedIn API keys are throttled by default. You should take a look at the <a href="http://developer.linkedin.com/documents/throttle-limits">Throttle Limits Documentation</a> to get more information about it.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/ozgur">ozgur</a></p>
