@@ -3,7 +3,6 @@ Python LinkedIn
 
 Python interface to the LinkedIn API
 
-
 This library provides a pure Python interface to the LinkedIn **Profile**, **Group**, **Company**, **Jobs**, **Search**, **Share**, **Network** and **Invitation** REST APIs.
 
 `LinkedIn <http://developer.linkedin.com>`_ provides a service that lets people bring their LinkedIn profiles and networks with them to your site or application via their OAuth based API. This library provides a lightweight interface over a complicated LinkedIn OAuth based API to make it for python programmers easy to use.
@@ -20,8 +19,7 @@ You can install **python-linkedin** library via pip:
 Authentication
 -----------------------
 
-LinkedIn REST API uses **Oauth 2.0** protocol for authentication. In
-order to use the LinkedIn API, you have an **application key** and **application secret**. You can get more detail from `here <http://developers.linkedin.com/documents/authentication>`_.
+LinkedIn REST API uses **Oauth 2.0** protocol for authentication. In order to use the LinkedIn API, you have an **application key** and **application secret**. You can get more detail from `here <http://developers.linkedin.com/documents/authentication>`_.
 
 For debugging purposes you can use the credentials below. It belongs to my test application. Nothing's harmful.
 
@@ -39,11 +37,11 @@ LinkedIn redirects the user back to your website's URL after granting access (gi
 
     from linkedin import linkedin
 
-    API_KEY = 'wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl'
-    API_SECRET = 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG'
-    RETURN_URL = 'http://localhost:8000'
+    API_KEY = "wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl"
+    API_SECRET = "daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG"
+    RETURN_URL = "http://localhost:8000"
     authentication = linkedin.LinkedInAuthentication(API_KEY, API_SECRET, RETURN_URL, linkedin.PERMISSIONS.enums.values())
-    print authentication.authorization_url # Open this url with your browser
+    print authentication.authorization_url
     application = linkedin.LinkedInApplication(authentication)
 
 When you grant access to the application, you will be redirected to the return url with the following query strings appended to your **RETURN_URL**:
@@ -57,7 +55,7 @@ This means that the value of the **authorization_code** is **AQTXrv3Pe1iWS0EQvLg
 
 .. code-block:: python
 
-    authentication.authorization_code = 'AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8'
+    authentication.authorization_code = "AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWih7iRyDSzAm5jaf3R7I8"
     authentication.get_access_token()
 
 
@@ -69,13 +67,13 @@ For testing the library using an interpreter, use the quick helper.
 .. code-block:: python
 
     from linkedin import server
-    application = server.quick_api(<Your KEY>, <Your SECRET>)
+    application = server.quick_api(KEY, SECRET)
 
 This will print the authorization url to the screen. Go into this URL using a browser, after you login, the method will return with an API object you can now use.
 
 .. code-block:: python
 
-    api.get_profile()
+    application.get_profile()
 
 
 More
