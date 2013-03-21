@@ -39,7 +39,7 @@ ENDPOINTS = make_enum('LinkedInURL',
                       JOB_SEARCH='https://api.linkedin.com/v1/job-search')
 
 
-NETWORK_UPDATES = make_enum('NetworkUpdateType',
+NETWORK_UPDATES = make_enum('NetworkUpdate',
                             APPLICATION='APPS',
                             COMPANY='CMPY',
                             CONNECTION='CONN',
