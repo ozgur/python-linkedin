@@ -137,8 +137,6 @@ class LinkedInApplication(object):
         else:
             params['oauth2_access_token'] = self.authentication.token.access_token
 
-        print locals()
-        print method, '=>', url, repr(headers)
         return requests.request(method.upper(), url, data=data, params=params,
                                 headers=headers, timeout=timeout)
 
@@ -490,10 +488,7 @@ class LinkedInApplication(object):
         try:
             response = self.make_request('POST', url,
                                          data=json.dumps(invitation.json))
-            response = response.json()
+            response.raise_for_status()
         except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
-        else:
-            if not self.request_succeeded(response):
-                raise LinkedInError(response)
-            return response
+        return True

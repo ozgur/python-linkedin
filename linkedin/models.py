@@ -7,7 +7,10 @@ AccessToken = collections.namedtuple('AccessToken', ['access_token', 'expires_in
 class LinkedInRecipient(object):
     def __init__(self, member_id, email, first_name, last_name):
         assert member_id or email, 'Either member ID or email must be given'
-        self.member_id = str(member_id)
+        if member_id:
+            self.member_id = str(member_id)
+        else:
+            self.member_id = None
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
