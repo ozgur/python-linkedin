@@ -357,13 +357,31 @@ application.get_network_updates(update_types)
    u'updateKey': u'UNIU-46113651-5718808205493026816-SHARE',
    u'updateType': u'SHAR'}]}
 ```
+
 ## Invitation API
 The Invitation API allows your users to invite people they find in your application to their LinkedIn network. You can get more information from [here](http://developers.linkedin.com/documents/invitation-api).
 
-
 ```python
+from linkedin.models import LinkedInRecipient, LinkedInInvitation
+recipient = LinkedInRecipient(None, 'john.doe@python.org', 'John', 'Doe')
+print recipient.json
+{'person': {'_path': '/people/email=john.doe@python.org',
+  'first-name': 'John',
+  'last-name': 'Doe'}}
 
+invitation = LinkedInInvitation('Hello John', "What's up? Can I add you as a friend?", (recipient,), 'friend')
+print invitation.json
+{'body': "What's up? Can I add you as a friend?",
+ 'item-content': {'invitation-request': {'connect-type': 'friend'}},
+ 'recipients': {'values': [{'person': {'_path': '/people/email=john.doe@python.org',
+     'first-name': 'John',
+     'last-name': 'Doe'}}]},
+ 'subject': 'Hello John'}
+
+application.send_invitation(invitation)
+True
 ```
+
 ## Throttle Limits
 
-LinkedIn API keys are throttled by default. You should take a look at [http://developer.linkedin.com/docs/DOC-1112](http://developer.linkedin.com/docs/DOC-1112) to get more information.
+LinkedIn API keys are throttled by default. You should take a look at the [Throttle Limits Documentation](http://developer.linkedin.com/documents/throttle-limits) to get more information about it.
