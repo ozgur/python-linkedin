@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import requests
 import urllib
 import random
 import hashlib
-import collections
 import contextlib
 import json
 
@@ -13,11 +10,12 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-import urllib, time, random, httplib, hmac, binascii, cgi, string
-from HTMLParser import HTMLParser
+from .models import AccessToken, LinkedInInvitation
+from .utils import make_enum, to_utf8
+from .exceptions import LinkedInError, LinkedInHTTPError
 
-from .model import *
-from .utils import make_enum, to_utf8, HTTP_METHODS
+
+__all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
 
 PERMISSIONS = make_enum('Permission',
                         BASIC_PROFILE='r_basicprofile',
@@ -41,24 +39,17 @@ ENDPOINTS = make_enum('LinkedInURL',
                       JOB_SEARCH='https://api.linkedin.com/v1/job-search')
 
 
-AccessToken = collections.namedtuple('AccessToken', ['access_token', 'expires_in'],
-                                     verbose=False, rename=False)
-
-
-class BaseLinkedInError(Exception):
-    pass
-
-class LinkedInHTTPError(BaseLinkedInError):
-    pass
-
-class LinkedInError(BaseLinkedInError):
-    def __init__(self, error):
-        if 'error' in error:
-            Exception.__init__(self, u'%s: %s' % (error['error'],
-                                                  error['error_description']))
-        else:
-            Exception.__init__(self, u'%s: %s' % ('Request Error',
-                                                  error['message']))
+NETWORK_UPDATES = make_enum('NetworkUpdateType',
+                            APPLICATION='APPS',
+                            COMPANY='CMPY',
+                            CONNECTION='CONN',
+                            JOB='JOBS',
+                            GROUP='JGRP',
+                            PICTURE='PICT',
+                            EXTENDED_PROFILE='PRFX',
+                            CHANGED_PROFILE='PRFU',
+                            SHARED='SHAR',
+                            VIRAL='VIRL')
 
 
 class LinkedInAuthentication(object):
@@ -268,7 +259,7 @@ class LinkedInApplication(object):
             response = self.make_request('PUT', url,
                     data=json.dumps({'membershipState': {'code': 'member'}}))
             response.raise_for_status()
-        except (requests.ConnectionError, HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
             return True
@@ -278,7 +269,7 @@ class LinkedInApplication(object):
         try:
             response = self.make_request('DELETE', url)
             response.raise_for_status()
-        except (requests.ConnectionError, HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
             return True
@@ -298,7 +289,7 @@ class LinkedInApplication(object):
         try:
             response = self.make_request('POST', url, data=json.dumps(post))
             response = response.json()
-        except (requests.ConnectionError, HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
             if not self.request_succeeded(response):
@@ -364,7 +355,7 @@ class LinkedInApplication(object):
         try:
             response = self.make_request('POST', url, data=json.dumps(post))
             response = response.json()
-        except (requests.ConnectionError, HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
             if not self.request_succeeded(response):
@@ -376,7 +367,7 @@ class LinkedInApplication(object):
         try:
             response = self.make_request('DELETE', url)
             response.raise_for_status()
-        except (requests.ConnectionError, HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
             return True
@@ -435,11 +426,74 @@ class LinkedInApplication(object):
                 raise LinkedInError(response)
             return response
 
+    def submit_share(self, comment, title, description, submitted_url,
+                     submitted_image_url):
+        post = {
+            'comment': comment,
+            'content': {
+                'title': title,
+                'submitted-url': submitted_url,
+                'submitted-image-url': submitted_image_url,
+                'description': description
+            },
+            'visibility': {
+                'code': 'anyone'
+            }
+        }
+        url = '%s/~/shares' % ENDPOINTS.PEOPLE
+        try:
+            response = self.make_request('POST', url, data=json.dumps(post))
+            response = response.json()
+        except (requests.ConnectionError, requests.HTTPError), error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
 
+    def get_network_updates(self, types, self_scope=True, params=None, headers=None):
+        url = '%s/~/network/updates' % ENDPOINTS.PEOPLE
+        if not params:
+            params = {}
 
+        if types:
+            params.update({'type': types})
 
-if __name__ == '__main__':
-    authentication = LinkedInAuthentication('wFNJekVpDCJtRPFX812pQsJee-gt0zO4X5XmG6wcfSOSlLocxodAXNMbl0_hw3Vl', 'daJDa6_8UcnGMw1yuq9TjoO_PMKukXMo8vEMo7Qv5J-G3SPgrAV0FqFCd0TNjQyG', 'http://localhost', PERMISSIONS.enums.values())
-    authentication.token = AccessToken(access_token=u'AQXbxD10Rxxp17Yiru-9MNf3Glb6jxwQJmwkO_ip9x6G-8XA9eiccC0C_re3icyDSUTrU27ckoeusvFmLWdCVL7_Xa32ccdJkj-RiKsWiPWeNRswD5xkuhuGasJKfjnrMFGtUZlG9MVOATT5B-Eg5XFuuoFLMcgVvo-LAe0jgE5Rbj2FqZ0', expires_in=5182360)
+        if self_scope is True:
+            params.update({'scope': 'self'})
 
-    application = LinkedInApplication(authentication)
+        try:
+            response = self.make_request('GET', url, params=params, headers=headers)
+            response = response.json()
+        except requests.ConnectionError as error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
+
+    def get_network_status(self, params=None, headers=None):
+        url = '%s/~/network/network-stats' % ENDPOINTS.PEOPLE
+        try:
+            response = self.make_request('GET', url, params=params, headers=headers)
+            response = response.json()
+        except requests.ConnectionError as error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
+
+    def send_invitation(self, invitation):
+        assert type(invitation) == LinkedInInvitation, 'LinkedInInvitation required'
+        url = '%s/~/mailbox' % ENDPOINTS.PEOPLE
+        try:
+            response = self.make_request('POST', url,
+                                         data=json.dumps(invitation.json))
+            response = response.json()
+        except (requests.ConnectionError, requests.HTTPError), error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
