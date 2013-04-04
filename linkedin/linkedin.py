@@ -63,6 +63,7 @@ class LinkedInAuthentication(object):
         self.state = None
         self.authorization_code = None
         self.token = None
+        self._error = None
 
     @property
     def authorization_url(self):
@@ -76,6 +77,10 @@ class LinkedInAuthentication(object):
         # we ought to be encoding the qs by on our own.
         qsl = ['%s=%s' % (urllib.quote(k), urllib.quote(v)) for k, v in qd.items()]
         return '%s?%s' % (self.AUTHORIZATON_URL, '&'.join(qsl))
+
+    @property
+    def last_error(self):
+        return self._error
 
     def get_new_state(self):
         return hashlib.md5(
@@ -96,6 +101,7 @@ class LinkedInAuthentication(object):
             raise LinkedInHTTPError(error.message)
         else:
             if 'error' in response:
+                self._error = response['error_description']
                 raise LinkedInError(response)
         self.token = AccessToken(response['access_token'], response['expires_in'])
         return self.token
@@ -156,7 +162,7 @@ class LinkedInApplication(object):
         except requests.ConnectionError as error:
             raise LinkedInHTTPError(error.message)
         else:
-            if 'error' in response:
+            if self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
 
@@ -172,7 +178,7 @@ class LinkedInApplication(object):
         except requests.ConnectionError as error:
             raise LinkedInHTTPError(error.message)
         else:
-            if 'error' in response:
+            if self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
 
