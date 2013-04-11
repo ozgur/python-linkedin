@@ -15,6 +15,8 @@ This library provides a pure Python interface to the LinkedIn **Profile**, **Gro
 You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
+    $ pip install requests
+
 
 ## Authentication
 
