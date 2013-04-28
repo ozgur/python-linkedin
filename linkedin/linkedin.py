@@ -162,7 +162,7 @@ class LinkedInApplication(object):
         except requests.ConnectionError as error:
             raise LinkedInHTTPError(error.message)
         else:
-            if self.request_succeeded(response):
+            if not self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
 
@@ -178,7 +178,7 @@ class LinkedInApplication(object):
         except requests.ConnectionError as error:
             raise LinkedInHTTPError(error.message)
         else:
-            if self.request_succeeded(response):
+            if not self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
 
