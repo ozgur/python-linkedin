@@ -16,7 +16,7 @@ You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
     $ pip install requests
-    $ pip install oauth_requests
+    $ pip install requests_oauthlib
 
 
 ## Authentication
