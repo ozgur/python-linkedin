@@ -16,11 +16,42 @@ You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
     $ pip install requests
+    $ pip install requests_oauthlib
 
 
 ## Authentication
 
-LinkedIn REST API uses **Oauth 2.0** protocol for authentication. In order to use the LinkedIn API, you have an **application key** and **application secret**. You can get more detail from [here](http://developers.linkedin.com/documents/authentication).
+The LinkedIn REST API now supports the **Oauth 2.0** protocol for authentication. This package provides a full OAuth 2.0 implementation for connecting to LinkedIn as well as an option for using an OAuth 1.0a flow that can be helpful for development purposes or just accessing your own data.
+
+### Developer Authentication
+
+To connect to LinkedIn as a developer or just to access your own data, you don't even have to implement an OAuth 2.0 flow that involves redirects. You can simply use the 4 credentials that are provided to you in your LinkedIn appliation as part of an OAuth 1.0a flow and immediately access your data. Here's how:
+
+```python
+from linkedin import linkedin
+
+# Define CONSUMER_KEY, CONSUMER_SECRET,  
+# USER_TOKEN, and USER_SECRET from the credentials 
+# provided in your LinkedIn application
+
+# Instantiate the developer authentication class
+
+authentication = linkedin.LinkedInDeveloperAuthentication(CONSUMER_KEY, CONSUMER_SECRET, 
+                                                          USER_TOKEN, USER_SECRET, 
+                                                          RETURN_URL, linkedin.PERMISSIONS.enums.values())
+
+# Pass it in to the app...
+
+application = linkedin.LinkedInApplication(authentication)
+
+# Use the app....
+
+application.get_profile()
+```
+
+
+### Production Authentication
+In order to use the LinkedIn OAuth 2.0, you have an **application key** and **application secret**. You can get more detail from [here](http://developers.linkedin.com/documents/authentication).
 
 For debugging purposes you can use the credentials below. It belongs to my test application. Nothing's harmful.
 
