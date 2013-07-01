@@ -75,7 +75,7 @@ class LinkedInAuthentication(object):
     """
 
     def __init__(self, key, secret, redirect_uri, permissions=[]):
-        self.AUTHORIZATON_URL = 'https://www.linkedin.com/uas/oauth2/authorization'
+        self.AUTHORIZATION_URL = 'https://www.linkedin.com/uas/oauth2/authorization'
         self.ACCESS_TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken'
         self.key = key
         self.secret = secret
@@ -97,7 +97,8 @@ class LinkedInAuthentication(object):
         # urlencode uses quote_plus when encoding the query string so,
         # we ought to be encoding the qs by on our own.
         qsl = ['%s=%s' % (urllib.quote(k), urllib.quote(v)) for k, v in qd.items()]
-        return '%s?%s' % (self.AUTHORIZATON_URL, '&'.join(qsl))
+        return '%s?%s' % (self.AUTHORIZATION_URL, '&'.join(qsl))
+
 
     @property
     def last_error(self):
@@ -159,21 +160,18 @@ class LinkedInApplication(object):
         else:
             headers.update({'x-li-format': 'json', 'Content-Type': 'application/json'})
 
-        
+        params = {} 
         kw = dict(data=data, params=params,
                   headers=headers, timeout=timeout)
 
         if isinstance(self.authentication, LinkedInDeveloperAuthentication):
-            # Let requests_oauthlib.OAuth1 to do *all* of the work here
+            # Let requests_oauthlib.OAuth1 do *all* of the work here
             auth = OAuth1(self.authentication.consumer_key, self.authentication.consumer_secret, 
                           self.authentication.user_token, self.authentication.user_secret)
             kw.update({'auth' : auth})
         else:
-            if params is None:
-                params = {'oauth2_access_token': self.authentication.token.access_token}
-            else:
-                params['oauth2_access_token'] = self.authentication.token.access_token
-        
+            params.update({'oauth2_access_token': self.authentication.token.access_token})
+       
         return requests.request(method.upper(), url, **kw)
 
         
