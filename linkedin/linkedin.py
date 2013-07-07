@@ -332,6 +332,22 @@ class LinkedInApplication(object):
                 raise LinkedInError(response)
             return True
 
+    def get_company_by_email_domain(self, email_domain, params=None, headers=None):
+        identifiers = []
+        url = ENDPOINTS.COMPANIES
+
+        url = '%s?email-domain=%s' % (url, email_domain)
+
+        try:
+            response = self.make_request('GET', url, params=params, headers=headers)
+            response = response.json()
+        except requests.ConnectionError as error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
+
     def get_companies(self, company_ids=None, universal_names=None, selectors=None,
                       params=None, headers=None):
         identifiers = []
