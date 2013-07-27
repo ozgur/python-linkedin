@@ -554,3 +554,12 @@ class LinkedInApplication(object):
         except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         return True
+
+    def like_update(self, update_key):
+        url = '%s/~/network/updates/key=%s/is-liked' % (ENDPOINTS.PEOPLE, update_key)
+        try:
+            response = self.make_request('PUT', url, data='true')
+            response.raise_for_status()
+        except (requests.ConnectionError, requests.HTTPError), error:
+            raise LinkedInHTTPError(error.message)
+        return True
