@@ -54,10 +54,10 @@ NETWORK_UPDATES = make_enum('NetworkUpdate',
 
 
 class LinkedInDeveloperAuthentication(object):
-    """ 
+    """
     Uses all four credentials provided by LinkedIn as part of an OAuth 1.0a flow that provides instant
-    API access with no redirects/approvals required. Useful for situations in which users would like to 
-    access their own data or during the development process. 
+    API access with no redirects/approvals required. Useful for situations in which users would like to
+    access their own data or during the development process.
     """
 
     def __init__(self, consumer_key, consumer_secret, user_token, user_secret, redirect_uri, permissions=[]):
@@ -69,7 +69,7 @@ class LinkedInDeveloperAuthentication(object):
         self.permissions = permissions
 
 class LinkedInAuthentication(object):
-    """ 
+    """
     Implements a standard OAuth 2.0 flow that involves redirection for users to authorize the application
     to access account data.
     """
@@ -160,21 +160,22 @@ class LinkedInApplication(object):
         else:
             headers.update({'x-li-format': 'json', 'Content-Type': 'application/json'})
 
-        params = params or {} 
+        if params is None:
+            params = {}
         kw = dict(data=data, params=params,
                   headers=headers, timeout=timeout)
 
         if isinstance(self.authentication, LinkedInDeveloperAuthentication):
             # Let requests_oauthlib.OAuth1 do *all* of the work here
-            auth = OAuth1(self.authentication.consumer_key, self.authentication.consumer_secret, 
+            auth = OAuth1(self.authentication.consumer_key, self.authentication.consumer_secret,
                           self.authentication.user_token, self.authentication.user_secret)
             kw.update({'auth' : auth})
         else:
             params.update({'oauth2_access_token': self.authentication.token.access_token})
-       
+
         return requests.request(method.upper(), url, **kw)
 
-        
+
     def get_profile(self, member_id=None, member_url=None, selectors=None,
                     params=None, headers=None):
         if member_id:
