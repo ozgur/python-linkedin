@@ -544,3 +544,13 @@ class LinkedInApplication(object):
         except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         return True
+
+    def comment_on_update(self, update_key, comment):
+        comment = {'comment': comment}
+        url = '%s/~/network/updates/key=%s/update-comments' % (ENDPOINTS.PEOPLE, update_key)
+        try:
+            response = self.make_request('POST', url, data=json.dumps(comment))
+            response.raise_for_status()
+        except (requests.ConnectionError, requests.HTTPError), error:
+            raise LinkedInHTTPError(error.message)
+        return True
