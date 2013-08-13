@@ -169,7 +169,7 @@ class LinkedInApplication(object):
             # Let requests_oauthlib.OAuth1 do *all* of the work here
             auth = OAuth1(self.authentication.consumer_key, self.authentication.consumer_secret,
                           self.authentication.user_token, self.authentication.user_secret)
-            kw.update({'auth' : auth})
+            kw.update({'auth': auth})
         else:
             params.update({'oauth2_access_token': self.authentication.token.access_token})
 
@@ -334,11 +334,7 @@ class LinkedInApplication(object):
             return True
 
     def get_company_by_email_domain(self, email_domain, params=None, headers=None):
-        identifiers = []
-        url = ENDPOINTS.COMPANIES
-
-        url = '%s?email-domain=%s' % (url, email_domain)
-
+        url = '%s?email-domain=%s' % (ENDPOINTS.COMPANIES, email_domain)
         try:
             response = self.make_request('GET', url, params=params, headers=headers)
             response = response.json()
@@ -477,20 +473,24 @@ class LinkedInApplication(object):
                 raise LinkedInError(response)
             return response
 
-    def submit_share(self, comment, title, description, submitted_url,
-                     submitted_image_url):
+    def submit_share(self, comment=None, title=None, description=None,
+                     submitted_url=None, submitted_image_url=None,
+                     visibility_code='anyone'):
         post = {
-            'comment': comment,
-            'content': {
+            'visibility': {
+                'code': visibility_code,
+            },
+        }
+        if comment is not None:
+            post['comment'] = comment
+        if title is not None and submitted_url is not None:
+            post['content'] = {
                 'title': title,
                 'submitted-url': submitted_url,
                 'submitted-image-url': submitted_image_url,
-                'description': description
-            },
-            'visibility': {
-                'code': 'anyone'
+                'description': description,
             }
-        }
+
         url = '%s/~/shares' % ENDPOINTS.PEOPLE
         try:
             response = self.make_request('POST', url, data=json.dumps(post))
