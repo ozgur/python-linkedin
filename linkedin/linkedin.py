@@ -195,13 +195,31 @@ class LinkedInApplication(object):
             if not self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
-
+    
     def search_profile(self, selectors=None, params=None, headers=None):
         if selectors:
             url = '%s:(%s)' % (ENDPOINTS.PEOPLE_SEARCH,
                                LinkedInSelector.parse(selectors))
         else:
             url = ENDPOINTS.PEOPLE_SEARCH
+        try:
+            response = self.make_request('GET', url, params=params, headers=headers)
+            response = response.json()
+        except requests.ConnectionError as error:
+            raise LinkedInHTTPError(error.message)
+        else:
+            if not self.request_succeeded(response):
+                raise LinkedInError(response)
+            return response
+
+    def get_picture_urls(self, member_id=None, member_url=None,
+                    params=None, headers=None):
+        if member_id:
+                url = '%s/id=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, str(member_id))
+        elif member_url:
+            url = '%s/url=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
+        else:
+            url = '%s/~/picture-urls::(original)' % ENDPOINTS.PEOPLE
         try:
             response = self.make_request('GET', url, params=params, headers=headers)
             response = response.json()
