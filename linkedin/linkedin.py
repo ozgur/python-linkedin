@@ -343,7 +343,7 @@ class LinkedInApplication(object):
         url = '%s/%s/posts' % (ENDPOINTS.GROUPS, str(group_id))
         try:
             response = self.make_request('POST', url, data=json.dumps(post))
-            response = response.json()
+            #response = response.json() #force this will cause "ValueError: No JSON object could be decoded"
         except (requests.ConnectionError, requests.HTTPError), error:
             raise LinkedInHTTPError(error.message)
         else:
