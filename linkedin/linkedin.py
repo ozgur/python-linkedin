@@ -520,10 +520,11 @@ class LinkedInApplication(object):
                 raise LinkedInError(response)
             return response
 
-    def get_network_updates(self, types, member_id=None, self_scope=True, params=None, headers=None):
+    def get_network_updates(self, types, member_id=None, 
+                            self_scope=True, params=None, headers=None):
         if member_id:
             url = '%s/id=%s/network/updates' % (ENDPOINTS.PEOPLE,
-                                                str(member_id))
+                                             str(member_id))
         else:
             url = '%s/~/network/updates' % ENDPOINTS.PEOPLE
 
