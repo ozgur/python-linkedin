@@ -195,7 +195,7 @@ class LinkedInApplication(object):
             if not self.request_succeeded(response):
                 raise LinkedInError(response)
             return response
-    
+
     def search_profile(self, selectors=None, params=None, headers=None):
         if selectors:
             url = '%s:(%s)' % (ENDPOINTS.PEOPLE_SEARCH,
@@ -541,8 +541,14 @@ class LinkedInApplication(object):
                 raise LinkedInError(response)
             return response
 
-    def get_network_updates(self, types, self_scope=True, params=None, headers=None):
-        url = '%s/~/network/updates' % ENDPOINTS.PEOPLE
+    def get_network_updates(self, types, member_id=None, 
+                            self_scope=True, params=None, headers=None):
+        if member_id:
+            url = '%s/id=%s/network/updates' % (ENDPOINTS.PEOPLE,
+                                             str(member_id))
+        else:
+            url = '%s/~/network/updates' % ENDPOINTS.PEOPLE
+
         if not params:
             params = {}
 
