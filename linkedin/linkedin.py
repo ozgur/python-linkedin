@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import urllib
 import random
@@ -72,11 +73,11 @@ class LinkedInAuthentication(object):
     AUTHORIZATION_URL = 'https://www.linkedin.com/uas/oauth2/authorization'
     ACCESS_TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken'
 
-    def __init__(self, key, secret, redirect_uri, permissions=[]):
+    def __init__(self, key, secret, redirect_uri, permissions=None):
         self.key = key
         self.secret = secret
         self.redirect_uri = redirect_uri
-        self.permissions = permissions
+        self.permissions = permissions or []
         self.state = None
         self.authorization_code = None
         self.token = None
@@ -134,11 +135,12 @@ class LinkedInSelector(object):
 class LinkedInApplication(object):
     BASE_URL = 'https://api.linkedin.com'
 
-    def __init__(self, authentication):
-        assert authentication, 'Authentication instance must be provided'
-        assert type(authentication) in (LinkedInAuthentication,
-                                        LinkedInDeveloperAuthentication), 'Auth type mismatch'
+    def __init__(self, authentication=None, token=None):
+        assert authentication or token, 'Either authentication instance or access token is required'
         self.authentication = authentication
+        if not self.authentication:
+            self.authentication = LinkedInAuthentication('', '', '')
+            self.authentication.token = AccessToken(token, None)
 
     def make_request(self, method, url, data=None, params=None, headers=None,
                      timeout=60):

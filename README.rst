@@ -57,6 +57,15 @@ This means that the value of the **authorization_code** is **AQTXrv3Pe1iWS0EQvLg
     authentication.get_access_token()
 
 
+After you get the access token, you are now permitted to make API calls on behalf of the user who granted access to you app. In addition to that, in order to prevent from going through the OAuth flow for every consecutive request,
+one can directly assign the access token obtained before to the application instance.
+
+
+.. code-block:: python
+
+    application = linkedin.LinkedInApplication(token='AQTFtPILQkJzXHrHtyQ0rjLe3W0I')
+
+
 Quick Usage From Python Interpreter
 ---------------------------------------------------------
 

@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 import BaseHTTPServer
-import cgi
+import urlparse
 
 from .linkedin import LinkedInApplication, LinkedInAuthentication, PERMISSIONS
 
@@ -30,7 +31,7 @@ def _wait_for_user_to_enter_browser(app):
         def do_GET(self):
             p = self.path.split('?')
             if len(p) > 1:
-                params = cgi.parse_qs(p[1], True, True)
+                params = urlparse.parse_qs(p[1], True, True)
                 app.authentication.authorization_code = params['code'][0]
                 app.authentication.get_access_token()
 

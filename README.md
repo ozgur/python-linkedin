@@ -87,6 +87,13 @@ authentication.authorization_code = 'AQTXrv3Pe1iWS0EQvLg0NJA8ju_XuiadXACqHennhWi
 authentication.get_access_token()
 ```
 
+After you get the access token, you are now permitted to make API calls on behalf of the user who granted access to you app. In addition to that, in order to prevent from going through the OAuth flow for every consecutive request,
+one can directly assign the access token obtained before to the application instance.
+
+```python
+application = linkedin.LinkedInApplication(token='AQTFtPILQkJzXHrHtyQ0rjLe3W0I')
+```
+
 ## Quick Usage From Python Interpreter
 
 For testing the library using an interpreter, you can benefit from the test server.
