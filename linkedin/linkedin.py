@@ -441,6 +441,23 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
+    def get_network_update(self, types, update_key, 
+                            self_scope=True, params=None, headers=None):
+        url = '%s/~/network/updates/key=%s' % (ENDPOINTS.PEOPLE, str(update_key))
+
+        if not params:
+            params = {}
+
+        if types:
+            params.update({'type': types})
+
+        if self_scope is True:
+            params.update({'scope': 'self'})
+
+        response = self.make_request('GET', url, params=params, headers=headers)
+        raise_for_error(response)
+        return response.json()
+
     def get_network_status(self, params=None, headers=None):
         url = '%s/~/network/network-stats' % ENDPOINTS.PEOPLE
         response = self.make_request('GET', url, params=params, headers=headers)
