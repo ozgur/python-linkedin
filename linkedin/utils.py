@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-from .exceptions import LinkedInError
+from .exceptions import LinkedInError, get_exception_for_error_code
 
 try:
     from cStringIO import StringIO
@@ -60,7 +60,9 @@ def raise_for_error(response):
             if ('error' in response) or ('errorCode' in response):
                 message = '%s: %s' % (response.get('error', error.message),
                                       response.get('error_description', 'Unknown Error'))
-                raise LinkedInError(message)
+                error_code = response.get('status')
+                ex = get_exception_for_error_code(error_code)
+                raise ex(message)
             else:
                 raise LinkedInError(error.message)
         except (ValueError, TypeError):
