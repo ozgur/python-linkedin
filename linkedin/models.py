@@ -83,7 +83,6 @@ class LinkedInMessage(object):
             },
             'subject': self.subject,
             'body': self.body,
-            }
         }
         for recipient in self.recipients:
             result['recipients']['values'].append(recipient.json)
@@ -93,4 +92,3 @@ class LinkedInMessage(object):
             result['item-content']['invitation-request']['authorization'] = auth
 
         return result
-    
