@@ -34,3 +34,5 @@ nosetests.xml
 .project
 .pydevproject
 .idea
+
+.settings/org.eclipse.core.resources.prefs

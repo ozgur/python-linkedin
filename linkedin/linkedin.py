@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-import requests
-import urllib
-import random
-import hashlib
 import contextlib
+import hashlib
+import random
+import urllib
+
+import requests
 from requests_oauthlib import OAuth1
 
-from .models import AccessToken, LinkedInInvitation
-from .utils import enum, to_utf8, raise_for_error, json, StringIO
 from .exceptions import LinkedInError
+from .models import AccessToken, LinkedInInvitation, LinkedInMessage
+from .utils import enum, to_utf8, raise_for_error, json, StringIO
 
 
 __all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
@@ -102,7 +103,7 @@ class LinkedInAuthentication(object):
 
     def _make_new_state(self):
         return hashlib.md5(
-            '%s%s' % (random.randrange(0, 2**63), self.secret)).hexdigest()
+            '%s%s' % (random.randrange(0, 2 ** 63), self.secret)).hexdigest()
 
     def get_access_token(self, timeout=60):
         assert self.authorization_code, 'You must first get the authorization code'
@@ -420,7 +421,7 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
-    def get_network_updates(self, types, member_id=None, 
+    def get_network_updates(self, types, member_id=None,
                             self_scope=True, params=None, headers=None):
         if member_id:
             url = '%s/id=%s/network/updates' % (ENDPOINTS.PEOPLE,
@@ -441,7 +442,7 @@ class LinkedInApplication(object):
         raise_for_error(response)
         return response.json()
 
-    def get_network_update(self, types, update_key, 
+    def get_network_update(self, types, update_key,
                             self_scope=True, params=None, headers=None):
         url = '%s/~/network/updates/key=%s' % (ENDPOINTS.PEOPLE, str(update_key))
 
@@ -469,6 +470,14 @@ class LinkedInApplication(object):
         url = '%s/~/mailbox' % ENDPOINTS.PEOPLE
         response = self.make_request('POST', url,
                                      data=json.dumps(invitation.json))
+        raise_for_error(response)
+        return True
+
+    def send_message(self, message):
+        assert type(message) == LinkedInMessage, 'LinkedInInvitation required'
+        url = '%s/~/mailbox' % ENDPOINTS.PEOPLE
+        response = self.make_request('POST', url,
+                                     data=json.dumps(message.json))
         raise_for_error(response)
         return True
 
