@@ -15,6 +15,7 @@ from .utils import enum, to_utf8, raise_for_error, json, StringIO
 __all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
 
 PERMISSIONS = enum('Permission',
+                        COMPANY_ADMIN='rw_company_admin',
                         BASIC_PROFILE='r_basicprofile',
                         FULL_PROFILE='r_fullprofile',
                         EMAIL_ADDRESS='r_emailaddress',
