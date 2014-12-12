@@ -61,7 +61,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
             self.json_headers()
             self.wfile.write(dumps(getattr(liw.application, parsedurl.path[1:])()))
         else:
-            self.json_headers(412)
+            self.json_headers(501)
             self.wfile.write(dumps({'error': 'NotImplemented'}))
 
 
