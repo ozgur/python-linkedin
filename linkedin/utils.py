@@ -50,7 +50,7 @@ def to_utf8(st):
 def raise_for_error(response):
     try:
         response.raise_for_status()
-    except (requests.HTTPError, requests.ConnectionError), error:
+    except (requests.HTTPError, requests.ConnectionError) as error:
         try:
             if len(response.content) == 0:
                 # There is nothing we can do here since LinkedIn has neither sent
@@ -59,7 +59,7 @@ def raise_for_error(response):
             response = response.json()
             if ('error' in response) or ('errorCode' in response):
                 message = '%s: %s' % (response.get('error', error.message),
-                                      response.get('error_description', 'Unknown Error'))
+                                      response.get('message', 'Unknown Error'))
                 error_code = response.get('status')
                 ex = get_exception_for_error_code(error_code)
                 raise ex(message)
