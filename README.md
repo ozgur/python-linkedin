@@ -255,6 +255,16 @@ application.get_memberships(params={'count': 20})
    u'membershipState': {u'code': u'member'}}]}
 
 application.get_posts(41001)
+
+application.get_post_comments(
+    %POST_ID%,
+    selectors=[
+        {"creator": ["first-name", "last-name"]},
+        "creation-timestamp",
+        "text"
+    ],
+    params={"start": 0, "count": 20}
+) 
 ```
 
 You can also submit a new post into a specific group.
