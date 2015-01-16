@@ -15,38 +15,37 @@ from .utils import enum, to_utf8, raise_for_error, json, StringIO
 __all__ = ['LinkedInAuthentication', 'LinkedInApplication', 'PERMISSIONS']
 
 PERMISSIONS = enum('Permission',
-                        BASIC_PROFILE='r_basicprofile',
-                        FULL_PROFILE='r_fullprofile',
-                        EMAIL_ADDRESS='r_emailaddress',
-                        NETWORK='r_network',
-                        CONTACT_INFO='r_contactinfo',
-                        NETWORK_UPDATES='rw_nus',
-                        GROUPS='rw_groups',
-                        MESSAGES='w_messages')
-
+                   COMPANY_ADMIN='rw_company_admin',
+                   BASIC_PROFILE='r_basicprofile',
+                   FULL_PROFILE='r_fullprofile',
+                   EMAIL_ADDRESS='r_emailaddress',
+                   NETWORK='r_network',
+                   CONTACT_INFO='r_contactinfo',
+                   NETWORK_UPDATES='rw_nus',
+                   GROUPS='rw_groups',
+                   MESSAGES='w_messages')
 
 ENDPOINTS = enum('LinkedInURL',
-                      PEOPLE='https://api.linkedin.com/v1/people',
-                      PEOPLE_SEARCH='https://api.linkedin.com/v1/people-search',
-                      GROUPS='https://api.linkedin.com/v1/groups',
-                      POSTS='https://api.linkedin.com/v1/posts',
-                      COMPANIES='https://api.linkedin.com/v1/companies',
-                      COMPANY_SEARCH='https://api.linkedin.com/v1/company-search',
-                      JOBS='https://api.linkedin.com/v1/jobs',
-                      JOB_SEARCH='https://api.linkedin.com/v1/job-search')
-
+                 PEOPLE='https://api.linkedin.com/v1/people',
+                 PEOPLE_SEARCH='https://api.linkedin.com/v1/people-search',
+                 GROUPS='https://api.linkedin.com/v1/groups',
+                 POSTS='https://api.linkedin.com/v1/posts',
+                 COMPANIES='https://api.linkedin.com/v1/companies',
+                 COMPANY_SEARCH='https://api.linkedin.com/v1/company-search',
+                 JOBS='https://api.linkedin.com/v1/jobs',
+                 JOB_SEARCH='https://api.linkedin.com/v1/job-search')
 
 NETWORK_UPDATES = enum('NetworkUpdate',
-                            APPLICATION='APPS',
-                            COMPANY='CMPY',
-                            CONNECTION='CONN',
-                            JOB='JOBS',
-                            GROUP='JGRP',
-                            PICTURE='PICT',
-                            EXTENDED_PROFILE='PRFX',
-                            CHANGED_PROFILE='PRFU',
-                            SHARED='SHAR',
-                            VIRAL='VIRL')
+                       APPLICATION='APPS',
+                       COMPANY='CMPY',
+                       CONNECTION='CONN',
+                       JOB='JOBS',
+                       GROUP='JGRP',
+                       PICTURE='PICT',
+                       EXTENDED_PROFILE='PRFX',
+                       CHANGED_PROFILE='PRFU',
+                       SHARED='SHAR',
+                       VIRAL='VIRL')
 
 
 class LinkedInDeveloperAuthentication(object):
@@ -56,6 +55,7 @@ class LinkedInDeveloperAuthentication(object):
     Useful for situations in which users would like to access their own data or
     during the development process.
     """
+
     def __init__(self, consumer_key, consumer_secret, user_token, user_secret,
                  redirect_uri, permissions=[]):
         self.consumer_key = consumer_key
@@ -195,9 +195,9 @@ class LinkedInApplication(object):
         return response.json()
 
     def get_picture_urls(self, member_id=None, member_url=None,
-                    params=None, headers=None):
+                         params=None, headers=None):
         if member_id:
-                url = '%s/id=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, str(member_id))
+            url = '%s/id=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE,
                                                           urllib.quote_plus(member_url))
@@ -262,11 +262,21 @@ class LinkedInApplication(object):
         response = self.make_request('GET', url, params=params, headers=headers)
         raise_for_error(response)
         return response.json()
+        
+    def get_post_comments(self, post_id, selectors=None, params=None,
+                  headers=None):
+        url = '%s/%s/comments' % (ENDPOINTS.POSTS, post_id)
+        if selectors:
+            url = '%s:(%s)' % (url, LinkedInSelector.parse(selectors))
+
+        response = self.make_request('GET', url, params=params, headers=headers)
+        raise_for_error(response)
+        return response.json()        
 
     def join_group(self, group_id):
         url = '%s/~/group-memberships/%s' % (ENDPOINTS.PEOPLE, str(group_id))
         response = self.make_request('PUT', url,
-                    data=json.dumps({'membershipState': {'code': 'member'}}))
+                                     data=json.dumps({'membershipState': {'code': 'member'}}))
         raise_for_error(response)
         return True
 
@@ -429,7 +439,7 @@ class LinkedInApplication(object):
                             self_scope=True, params=None, headers=None):
         if member_id:
             url = '%s/id=%s/network/updates' % (ENDPOINTS.PEOPLE,
-                                             str(member_id))
+                                                str(member_id))
         else:
             url = '%s/~/network/updates' % ENDPOINTS.PEOPLE
 
@@ -447,7 +457,7 @@ class LinkedInApplication(object):
         return response.json()
 
     def get_network_update(self, types, update_key,
-                            self_scope=True, params=None, headers=None):
+                           self_scope=True, params=None, headers=None):
         url = '%s/~/network/updates/key=%s' % (ENDPOINTS.PEOPLE, str(update_key))
 
         if not params:

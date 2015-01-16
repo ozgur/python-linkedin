@@ -15,13 +15,20 @@ This library provides a pure Python interface to the LinkedIn **Profile**, **Gro
 You can install **python-linkedin** library via pip:
 
     $ pip install python-linkedin
-    $ pip install requests
-    $ pip install requests_oauthlib
-
 
 ## Authentication
 
-The LinkedIn REST API now supports the **Oauth 2.0** protocol for authentication. This package provides a full OAuth 2.0 implementation for connecting to LinkedIn as well as an option for using an OAuth 1.0a flow that can be helpful for development purposes or just accessing your own data.
+The LinkedIn REST API now supports the **OAuth 2.0** protocol for authentication. This package provides a full OAuth 2.0 implementation for connecting to LinkedIn as well as an option for using an OAuth 1.0a flow that can be helpful for development purposes or just accessing your own data.
+
+### HTTP API example
+
+Set `LINKEDIN_API_KEY` and `LINKEDIN_API_SECRET`, configure your app to redirect to `http://localhost:8080/code`, then execute:
+
+  0. `http_api.py`
+  1. Visit `http://localhost:8080` in your browser, curl or similar
+  2. A tab in your browser will open up, give LinkedIn permission there
+  3. You'll then be presented with a list of available routes, hit any, e.g.:
+  4. `curl -XGET http://localhost:8080/get_profile`
 
 ### Developer Authentication
 
@@ -252,6 +259,16 @@ application.get_memberships(params={'count': 20})
    u'membershipState': {u'code': u'member'}}]}
 
 application.get_posts(41001)
+
+application.get_post_comments(
+    %POST_ID%,
+    selectors=[
+        {"creator": ["first-name", "last-name"]},
+        "creation-timestamp",
+        "text"
+    ],
+    params={"start": 0, "count": 20}
+) 
 ```
 
 You can also submit a new post into a specific group.
