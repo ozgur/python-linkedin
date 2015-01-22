@@ -263,16 +263,15 @@ class LinkedInApplication(object):
         response = self.make_request('GET', url, params=params, headers=headers)
         raise_for_error(response)
         return response.json()
-        
-    def get_post_comments(self, post_id, selectors=None, params=None,
-                  headers=None):
+
+    def get_post_comments(self, post_id, selectors=None, params=None, headers=None):
         url = '%s/%s/comments' % (ENDPOINTS.POSTS, post_id)
         if selectors:
             url = '%s:(%s)' % (url, LinkedInSelector.parse(selectors))
 
         response = self.make_request('GET', url, params=params, headers=headers)
         raise_for_error(response)
-        return response.json()        
+        return response.json()
 
     def join_group(self, group_id):
         url = '%s/~/group-memberships/%s' % (ENDPOINTS.PEOPLE, str(group_id))
@@ -385,6 +384,31 @@ class LinkedInApplication(object):
             url = '%s:(%s)' % (url, LinkedInSelector.parse(selectors))
 
         response = self.make_request('GET', url, params=params, headers=headers)
+        raise_for_error(response)
+        return response.json()
+
+    def submit_company_share(self, company_id, comment=None, title=None, description=None,
+                             submitted_url=None, submitted_image_url=None,
+                             visibility_code='anyone'):
+
+        post = {
+            'visibility': {
+                'code': visibility_code,
+            },
+        }
+        if comment is not None:
+            post['comment'] = comment
+        if title is not None and submitted_url is not None:
+            post['content'] = {
+                'title': title,
+                'submitted-url': submitted_url,
+                'submitted-image-url': submitted_image_url,
+                'description': description,
+            }
+
+        url = '%s/%s/shares' % (ENDPOINTS.COMPANIES, company_id)
+
+        response = self.make_request('POST', url, data=json.dumps(post))
         raise_for_error(response)
         return response.json()
 
