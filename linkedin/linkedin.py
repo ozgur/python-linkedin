@@ -292,11 +292,13 @@ class LinkedInApplication(object):
             'title': title, 'summary': summary,
             'content': {
                 'submitted-url': submitted_url,
-                'submitted-image-url': submitted_image_url,
                 'title': content_title,
                 'description': description
             }
         }
+        if submitted_image_url:
+            post['content']['submitted-image-url'] = submitted_image_url
+
         url = '%s/%s/posts' % (ENDPOINTS.GROUPS, str(group_id))
         response = self.make_request('POST', url, data=json.dumps(post))
         raise_for_error(response)
@@ -402,9 +404,10 @@ class LinkedInApplication(object):
             post['content'] = {
                 'title': title,
                 'submitted-url': submitted_url,
-                'submitted-image-url': submitted_image_url,
                 'description': description,
             }
+        if submitted_image_url:
+            post['content']['submitted-image-url'] = submitted_image_url
 
         url = '%s/%s/shares' % (ENDPOINTS.COMPANIES, company_id)
 
@@ -451,9 +454,10 @@ class LinkedInApplication(object):
             post['content'] = {
                 'title': title,
                 'submitted-url': submitted_url,
-                'submitted-image-url': submitted_image_url,
                 'description': description,
             }
+        if submitted_image_url:
+            post['content']['submitted-image-url'] = submitted_image_url
 
         url = '%s/~/shares' % ENDPOINTS.PEOPLE
         response = self.make_request('POST', url, data=json.dumps(post))
