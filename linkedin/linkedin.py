@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import contextlib
 import hashlib
 import random
-import urllib
+
+try:
+    from urllib.parse import quote, quote_plus
+except ImportError:
+    from urllib import quote, quote_plus
 
 import requests
 from requests_oauthlib import OAuth1
@@ -93,7 +98,7 @@ class LinkedInAuthentication(object):
               'redirect_uri': self.redirect_uri}
         # urlencode uses quote_plus when encoding the query string so,
         # we ought to be encoding the qs by on our own.
-        qsl = ['%s=%s' % (urllib.quote(k), urllib.quote(v)) for k, v in qd.items()]
+        qsl = ['%s=%s' % (quote(k), quote(v)) for k, v in qd.items()]
         return '%s?%s' % (self.AUTHORIZATION_URL, '&'.join(qsl))
 
     @property
@@ -102,7 +107,8 @@ class LinkedInAuthentication(object):
 
     def _make_new_state(self):
         return hashlib.md5(
-            '%s%s' % (random.randrange(0, 2 ** 63), self.secret)).hexdigest()
+            '{}{}'.format(random.randrange(0, 2 ** 63), self.secret).encode("utf8")
+        ).hexdigest()
 
     def get_access_token(self, timeout=60):
         assert self.authorization_code, 'You must first get the authorization code'
@@ -174,7 +180,7 @@ class LinkedInApplication(object):
             else:
                 url = '%s/id=%s' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
-            url = '%s/url=%s' % (ENDPOINTS.PEOPLE, urllib.quote_plus(member_url))
+            url = '%s/url=%s' % (ENDPOINTS.PEOPLE, quote_plus(member_url))
         else:
             url = '%s/~' % ENDPOINTS.PEOPLE
         if selectors:
@@ -200,7 +206,7 @@ class LinkedInApplication(object):
             url = '%s/id=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/picture-urls::(original)' % (ENDPOINTS.PEOPLE,
-                                                          urllib.quote_plus(member_url))
+                                                          quote_plus(member_url))
         else:
             url = '%s/~/picture-urls::(original)' % ENDPOINTS.PEOPLE
 
@@ -214,7 +220,7 @@ class LinkedInApplication(object):
             url = '%s/id=%s/connections' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/connections' % (ENDPOINTS.PEOPLE,
-                                             urllib.quote_plus(member_url))
+                                             quote_plus(member_url))
         else:
             url = '%s/~/connections' % ENDPOINTS.PEOPLE
         if selectors:
@@ -230,7 +236,7 @@ class LinkedInApplication(object):
             url = '%s/id=%s/group-memberships' % (ENDPOINTS.PEOPLE, str(member_id))
         elif member_url:
             url = '%s/url=%s/group-memberships' % (ENDPOINTS.PEOPLE,
-                                                   urllib.quote_plus(member_url))
+                                                   quote_plus(member_url))
         else:
             url = '%s/~/group-memberships' % ENDPOINTS.PEOPLE
 
@@ -307,7 +313,7 @@ class LinkedInApplication(object):
         url = '%s/%s/relation-to-viewer/is-liked' % (ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('PUT', url, data=json.dumps(action))
-        except (requests.ConnectionError, requests.HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError) as error:
             raise LinkedInError(error.message)
         else:
             return True
@@ -319,7 +325,7 @@ class LinkedInApplication(object):
         url = '%s/%s/comments' % (ENDPOINTS.POSTS, str(post_id))
         try:
             self.make_request('POST', url, data=json.dumps(post))
-        except (requests.ConnectionError, requests.HTTPError), error:
+        except (requests.ConnectionError, requests.HTTPError) as error:
             raise LinkedInError(error.message)
         else:
             return True
